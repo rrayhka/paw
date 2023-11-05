@@ -1,22 +1,18 @@
 <?php
     include 'conn.php';
-    $alpha = "RM";
-    $queryPK = mysqli_query($conn, "SELECT MAX(id_rm) FROM tb_rekammedis");
-    // echo primaryKey($alpha, $queryPK);
     if (isset($_POST["submit"])) {
-        $id_rm = primaryKey($alpha, $queryPK);
-        $id_pasien = $_POST["id_pasien"];
-        $keluhan = $_POST["keluhan"];
-        $id_dokter = $_POST["id_dokter"];
-        $diagnosis = $_POST["diagnosa"];
-        $id_poli = $_POST["id_poli"];
-        $tanggal_periksa = $_POST["tanggal_periksa"];
-        var_dump($id_rm);
-        $query = mysqli_query($conn, "INSERT INTO tb_rekammedis VALUES ('$id_rm', '$id_pasien', '$keluhan', '$id_dokter', '$diagnosis', '$id_poli', '$tanggal_periksa')");
-        if ($query) {
-            header("Location: index.php");
+        if (tambah_rekam_medis($_POST) > 0) {
+            echo "
+                <script>
+                    alert('data berhasil ditambahkan');
+                    document.location.href = 'index.php';
+                </script>
+            ";
+        } else {
+            echo "tidak berhasil";
         }
     }
+    
 ?>
 
 <!DOCTYPE html>
