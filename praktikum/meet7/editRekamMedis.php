@@ -10,7 +10,18 @@
         $diagnosis = $_POST["diagnosa"];
         $id_poli = $_POST["id_poli"];
         $tanggal_periksa = $_POST["tanggal_periksa"];
-        var_dump($id_rm, $id_pasien, $keluhan, $id_dokter, $diagnosis, $id_poli, $tanggal_periksa);
+        // var_dump($id_rm, $id_pasien, $keluhan, $id_dokter, $diagnosis, $id_poli, $tanggal_periksa);
+        $query = mysqli_query($conn, "UPDATE tb_rekammedis SET id_pasien = '$id_pasien', keluhan = '$keluhan', id_dokter = '$id_dokter', diagnosa = '$diagnosis', id_poli = '$id_poli', tgl_periksa = '$tanggal_periksa' WHERE id_rm = '$id_rm'");   
+        if($query){
+            echo "
+                <script>
+                    alert('data berhasil diubah');
+                    document.location.href = 'index.php';
+                </script>
+            ";
+        } else {
+            echo "tidak berhasil";
+        }
     }
 
 ?>
