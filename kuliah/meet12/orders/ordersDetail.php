@@ -1,6 +1,18 @@
 <?php
     include "../koneksi.php";
     $order_id = $_GET["order_id"];
+    $status = [
+        "1" => "Pending",
+        "2" => "Process",
+        "3" => "Delivered",
+        "4" => "Canceled"
+    ];
+
+    if(isset($_POST["status"])) {
+        $status1 = $_POST["status"];
+        $sql = "UPDATE orders SET status = '$status1' WHERE order_id = $order_id";
+        mysqli_query($conn, $sql);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -45,48 +57,46 @@
 
     <div class="container mt-3">
         <h1 class="mb-4">Order Detail</h1>
-        <form action="">
-            <table class="table table-striped text-center table-hover table border">
-                <thead>
-                    <th>Order Id</th>
-                    <th>Nama Menu</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </thead>
-                <tbody>
-                    <?php
-                        $count = 1;
-                        $order_id = $_GET['order_id'];
-                        $sql = "SELECT * FROM orders WHERE order_id = $order_id";
-                        $result = mysqli_query($conn, $sql);
-                        while($row = mysqli_fetch_assoc($result)):
-                    ?>
-                    <tr>
-                        <td><?= $row['order_id'] ?></td>
-                        <td><?= $row['jam_order'] ?></td>
-                        <td><?= $row['status'] ?></td>
-                        <td>
-                            <select name="status" id="status">
+        <table class="table table-striped text-center table-hover table border">
+            <thead>
+                <th>Order Id</th>
+                <th>Nama Menu</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </thead>
+            <tbody>
+                <?php
+                    $count = 1;
+                    $order_id = $_GET['order_id'];
+                    $sql = "SELECT * FROM orders WHERE order_id = $order_id";
+                    $result = mysqli_query($conn, $sql);
+                    while($row = mysqli_fetch_assoc($result)):
+                ?>
+                <tr>
+                    <td><?= $row['order_id'] ?></td>
+                    <td><?= $row['jam_order'] ?></td>
+                    <td><?= $row['status'] ?></td>
+                    <td>
+                        <form method="post">
+                            <select name="status" id="status" onchange="this.form.submit()">
                                 <option value="">Pilih Status</option>
                                 <?php
-                                    $status = "SELECT * FROM status";
-                                    $result = mysqli_query($conn, $status);
-                                    while($row = mysqli_fetch_assoc($result)):
-                                ?>
-                                    <option value="<?= $row['status_id'] ?>"><?= $row['status'] ?></option>
+                                foreach($status as $key => $value):
+                                    ?>
+                                <option value="<?= $value ?>"><?= $value; ?></option>
                                 <?php
-                                    endwhile;
+                                endforeach;
                                 ?>
-                            </select>
-                        </td>
-                    </tr>
-                    <?php
-                        $count++;
-                        endwhile;
-                    ?>
-                </tbody>
-            </table>
-        </form>
+                        </select>
+                        </form>
+                    </td>
+                </tr>
+                <?php
+                    $count++;
+                    endwhile;
+                ?>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
