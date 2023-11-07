@@ -1,5 +1,6 @@
 <?php
     include "../koneksi.php";
+    $order_id = $_GET["order_id"];
 ?>
 
 <!DOCTYPE html>
@@ -44,6 +45,48 @@
 
     <div class="container mt-3">
         <h1 class="mb-4">Order Detail</h1>
+        <form action="">
+            <table class="table table-striped text-center table-hover table border">
+                <thead>
+                    <th>Order Id</th>
+                    <th>Nama Menu</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </thead>
+                <tbody>
+                    <?php
+                        $count = 1;
+                        $order_id = $_GET['order_id'];
+                        $sql = "SELECT * FROM orders WHERE order_id = $order_id";
+                        $result = mysqli_query($conn, $sql);
+                        while($row = mysqli_fetch_assoc($result)):
+                    ?>
+                    <tr>
+                        <td><?= $row['order_id'] ?></td>
+                        <td><?= $row['jam_order'] ?></td>
+                        <td><?= $row['status'] ?></td>
+                        <td>
+                            <select name="status" id="status">
+                                <option value="">Pilih Status</option>
+                                <?php
+                                    $status = "SELECT * FROM status";
+                                    $result = mysqli_query($conn, $status);
+                                    while($row = mysqli_fetch_assoc($result)):
+                                ?>
+                                    <option value="<?= $row['status_id'] ?>"><?= $row['status'] ?></option>
+                                <?php
+                                    endwhile;
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <?php
+                        $count++;
+                        endwhile;
+                    ?>
+                </tbody>
+            </table>
+        </form>
     </div>
 </body>
 </html>
