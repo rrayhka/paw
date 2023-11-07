@@ -16,7 +16,7 @@
         } else {
             $subTotal = 0; 
         }
-        $query = mysqli_query($conn, "INSERT INTO `order_detail` VALUES (NULL, '$order_id', '$menu_id', '$qty', '$harga', '$subTotal')");
+        $query = mysqli_query($conn, "INSERT INTO `order_detail` VALUES (NULL, '$order_id', '$menu_id', '$qty', NULL, '$harga', '$subTotal')");
         if($query){
             echo "<script>
             alert('Data berhasil Ditambahkan!');
@@ -130,14 +130,13 @@
                     <td colspan="5" class="text-center">
                         Total Pembayaran
                     </td>
-                    <td>
+                    <td colspan="2">
                         <?php
                             $query = mysqli_query($conn, "SELECT SUM(sub_total) AS total FROM order_detail WHERE order_id = $order_id");
                             $data = mysqli_fetch_assoc($query);
                             echo $data['total'];
                         ?>
                     </td>
-                    <td></td>
                 </tr>
             </tbody>
         </table>
