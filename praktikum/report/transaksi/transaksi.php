@@ -2,7 +2,6 @@
     include("../koneksi.php");
     if(isset($_GET["id_hapus"])){
         $id = $_GET["id_hapus"];
-        // var_dump($id);
         $query = mysqli_query($koneksi, "DELETE FROM transaksi WHERE id = '$id'");
         if($query){
             header("Location: transaksi.php");
@@ -54,14 +53,13 @@
             </div>
         </nav>
         <div class="container mt-3">
+            <h1>Daftar Transaksi</h1>
             <a href="addTransaksi.php" class="btn btn-primary mb-3">Tambah Transaksi</a>
             <table class="table table-striped table-bordered text-center">
                 <thead class="table-primary">
                     <th>No</th>
                     <th>ID Transaksi</th>
                     <th>Tanggal</th>
-                    <!-- <th>Harga Total</th>
-                    <th>Quantity</th> -->
                     <th>Action</th>
                 </thead>
                 <tbody>
@@ -75,7 +73,6 @@
                             <td><?= $no; ?></td>
                             <td><?= $data['transaksi_id']; ?></td>
                             <td><?= $data['waktu_transaksi'] ?></td>
-                            <!-- <td></td>  -->
                             <td>
                                 <a href="addTransaksiDetail.php?id=<?= $data['transaksi_id'] ?>" class="btn btn-primary">Detail</a>
                                 <a href="transaksi.php?id_hapus=<?= $data['transaksi_id'] ?>" class="btn btn-danger" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">Hapus</a>

@@ -7,7 +7,7 @@
     WHERE id NOT IN (SELECT barang_id FROM transaksi_detail WHERE transaksi_id = '$transaksi_id')";
     $resultBarangBelumAda = mysqli_query($koneksi, $queryBarangBelumAda);
 
-    $queryTransaksiDetail = "SELECT td.*, b.kode_barang, b.nama_barang, b.harga 
+    $queryTransaksiDetail = "SELECT td.*, b.id, b.kode_barang, b.nama_barang, b.harga 
     FROM transaksi_detail td
     INNER JOIN barang b ON td.barang_id = b.id
     WHERE td.transaksi_id = '$transaksi_id'";
@@ -38,7 +38,11 @@
                     $totalHarga = mysqli_fetch_assoc($hargaTotal);
                     $updateTotal = mysqli_query($koneksi, "UPDATE transaksi SET total = '$totalHarga[total_harga]' WHERE id = '$transaksi_id'");
                     if($updateTotal) {
-                        header("Location: transaksi.php");
+                        echo "
+                        <script>
+                            window.reload();
+                        </script>
+                        ";
                     }
                 } else {
                     echo "Gagal menambahkan ke transaksi_detail.";
@@ -47,10 +51,31 @@
                 echo "Barang tidak ditemukan.";
             }
         } else {
-            echo "Barang sudah ada di transaksi_detail.";
+            echo "
+            <script>
+                alert('Barang sudah ada di transaksi Detail.');
+                window.reload();
+            </script>
+            ";
         }
 
         $resultTransaksiDetail = mysqli_query($koneksi, $queryTransaksiDetail);
+    }
+
+    if(isset($_GET['transaksi_id']) && isset($_GET['kode_barang'])) {
+        $transaksi_id = $_GET['transaksi_id'];
+        $kode_barang = $_GET['kode_barang'];
+        $deleteQuery = mysqli_query($koneksi, "DELETE FROM `transaksi_detail` WHERE `transaksi_detail`.`transaksi_id` = '$transaksi_id' AND `transaksi_detail`.`barang_id` = '$kode_barang'");
+        if($deleteQuery) {
+            $hargaTotal = mysqli_query($koneksi, "SELECT SUM(harga) AS total_harga FROM transaksi_detail WHERE transaksi_id = '$transaksi_id'");
+            $totalHarga = mysqli_fetch_assoc($hargaTotal);
+            $updateTotal = mysqli_query($koneksi, "UPDATE transaksi SET total = '$totalHarga[total_harga]' WHERE id = '$transaksi_id'");
+            if($updateTotal) {
+                header("Location: transaksi.php");
+            }
+        } else {
+            echo "Gagal menghapus data.";
+        }
     }
 
 ?>
@@ -129,23 +154,25 @@
             <!-- Tabel untuk menampilkan barang yang sudah terpilih -->
             <table class="table table-striped table-bordered text-center table-hover">
                 <thead class="table-primary">
-                    <!-- <th>Tanggal</th> -->
                     <th>Transaksi ID</th>
                     <th>Kode Barang</th>
                     <th>Nama Barang</th>
                     <th>Quantity</th>
                     <th>Harga Per Biji</th>
+                    <th>Aksi</th>
                 </thead>
                 <tbody>
                     <?php 
                     while ($row = mysqli_fetch_assoc($resultTransaksiDetail)) {
                         echo "<tr>";
-                        // echo "<td>{$row['waktu_tran']}</td>";
                         echo "<td>{$row['transaksi_id']}</td>";
                         echo "<td>{$row['kode_barang']}</td>";
                         echo "<td>{$row['nama_barang']}</td>";
                         echo "<td>{$row['qty']}</td>";
                         echo "<td>{$row['harga']}</td>";
+                        echo "<td>
+                        <a href='addTransaksiDetail.php?transaksi_id={$row['transaksi_id']}&kode_barang={$row['id']}' class='btn btn-danger' onclick='return confirm(\"Apakah anda yakin ingin menghapus data ini?\")'>Hapus</a>
+                        </td>";
                         echo "</tr>";
                     }
                     ?>
@@ -153,7 +180,7 @@
                         <td colspan="4">
                             Total Harga
                         </td>
-                        <td colspan="">
+                        <td colspan="2">
                             <?php
                                 $hargaTotal = mysqli_query($koneksi, "SELECT SUM(harga) AS total_harga FROM transaksi_detail WHERE transaksi_id = '$transaksi_id'");
                                 $totalHarga = mysqli_fetch_assoc($hargaTotal);
