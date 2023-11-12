@@ -50,8 +50,7 @@ INSERT INTO `barang` (`id`, `kode_barang`, `nama_barang`, `harga`, `stok`, `supp
 (7, 'FD007', 'Barang G', 24000, 42, 7),
 (8, 'FD008', 'Barang H', 19000, 53, 8),
 (9, 'FD009', 'Barang I', 21000, 46, 9),
-(10, 'FD010', 'Barang J', 16000, 62, 10),
-(11, 'e', 'aksjdfhajkf', 12000, 4, 1);
+(10, 'FD010', 'Barang J', 16000, 62, 10);
 
 -- --------------------------------------------------------
 
@@ -140,8 +139,7 @@ INSERT INTO `supplier` (`id`, `nama`, `telp`, `alamat`) VALUES
 (7, 'Supplier 7', '085678905432', 'Jl. Jawa no 23, Semarang'),
 (8, 'Supplier 8', '082132435466', 'Jl. Sudirman no 34, Bali'),
 (9, 'Supplier 9', '081276543210', 'Jl. A. Yani no 67, Malang'),
-(10, 'Supplier 10', '081112223334', 'Jl. Kebon Raya no 78, Solo'),
-(21, 'Mohammad Habibul Akhyar', '+62878653067', 'Nganjuk');
+(10, 'Supplier 10', '081112223334', 'Jl. Kebon Raya no 78, Solo');
 
 -- --------------------------------------------------------
 
