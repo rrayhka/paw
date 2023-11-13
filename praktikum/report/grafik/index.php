@@ -33,6 +33,7 @@
         $arrPendapatan = $queryJumlahPendapatan ? mysqli_fetch_all($queryJumlahPendapatan, MYSQLI_ASSOC) : array();
     }
 
+    
 ?>
 
 <!DOCTYPE html>
@@ -95,7 +96,8 @@
 
                     <div class="d-flex mb-3">
                         <button name="print" onclick="window.print()" class="btn btn-secondary mr-3">Print</button>
-                        <button type="button" onclick="excel()" class="btn btn-success">Export to Excel</button>    
+                        <a href="table.php?tanggalA=<?= $tanggalA ?>&tanggalB=<?= $tanggalB ?>"><button type="button" class="btn btn-success">Export to Excel</button></a>    
+                        
                     </div>
 
                     <div class="chart-container" style="width: 100%;">
