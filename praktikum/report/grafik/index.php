@@ -4,6 +4,8 @@
 
     $total = 0; 
     $queryTanggal = array(); 
+    $arrPelanggan = array();
+    $arrPendapatan = array();
 
     if(isset($_POST["submit"])){
         $tanggalA = $_POST["tanggalA"];
@@ -15,20 +17,22 @@
         );
         $queryTanggal = $transaksi ? mysqli_fetch_all($transaksi, MYSQLI_ASSOC) : array();
 
-        $jumlahPelanggan = mysqli_fetch_all(
-            mysqli_query($koneksi, 
-            "SELECT pelanggan_id, COUNT(DISTINCT pelanggan_id) AS jumlah_pelanggan
-            FROM transaksi WHERE waktu_transaksi BETWEEN '$tanggalA' AND '$tanggalB' GROUP BY pelanggan_id"
-            ), MYSQLI_ASSOC
-        );
-        $queryJumlahPendapatan = mysqli_fetch_all(
-            mysqli_query(
+        $jumlahPelanggan = mysqli_query(
+            $koneksi, 
+            "SELECT COUNT(DISTINCT pelanggan_id) AS total_pelanggan
+            FROM transaksi
+            WHERE waktu_transaksi BETWEEN '$tanggalA' AND '$tanggalB';"
+            );
+        $arrPelanggan = $jumlahPelanggan ? mysqli_fetch_all($jumlahPelanggan, MYSQLI_ASSOC) : array();
+        
+
+        $queryJumlahPendapatan = mysqli_query(
                 $koneksi, 
                 "SELECT sum(total) AS total_pendapatan FROM transaksi WHERE waktu_transaksi BETWEEN '$tanggalA' AND '$tanggalB'"
-            ),
-            MYSQLI_ASSOC
         );
+        $arrPendapatan = $queryJumlahPendapatan ? mysqli_fetch_all($queryJumlahPendapatan, MYSQLI_ASSOC) : array();
     }
+
 ?>
 
 <!DOCTYPE html>
@@ -36,112 +40,149 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <title>Document</title>
+        <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+        <title>Grafik</title>
     </head>
     <body>
-        <div class="container mt-3">
-            <div>
-                <form method="post">
-                    <input type="date" name="tanggalA" id=""><br>
-                    <input type="date" name="tanggalB" id="">
-                    <button type="submit" name="submit">Submit</button>
-                </form>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="barang.php">Praktikum</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="../grafik/index.php">Grafik</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../transaksi/transaksi.php">Transaksi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../suplier/suplier.php">Suplier</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../barang/barang.php">Barang</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://github.com/rrayhka" target="_blank">
+                                <i class="bi bi-github">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+                                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.20-.36-1.02.08-2.12 0 0 .67-.21 2.20.82.64-.18 1.32-.27 2.00-.27.68 0 1.36.09 2.00.27 1.53-1.04 2.20-.82 2.20-.82.44 1.10.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.20 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                                    </svg>
+                                </i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <div style="width: 40%; height: 50%;">
-                <canvas id="myChart"></canvas>
-            </div>
-            <table>
-                <thead>
-                    <th>No</th>
-                    <th>Total</th>
-                    <th>Tanggal</th>
-                </thead>
-                <tbody>
-                    <?php
-                        $no = 1;
-                        // Check if $queryTanggal is not null and is an array
-                        if(is_array($queryTanggal) && count($queryTanggal) > 0) {
-                            foreach($queryTanggal as $data){
-                                $total += $data["total"];
-                    ?>
-    
-                    <tr>
-                        <td><?= $no++ ?></td>
-                        <td><?= $data["total"] ?></td>
-                        <td><?= $data["waktu_transaksi"] ?></td>
-                    </tr>
-                    <?php
-                            }
-                        } else {
-                            echo "<tr><td colspan='3'>No data available</td></tr>";
-                        }
-                    ?>
-                </tbody>
-            </table>
-            <table>
-                <thead>
-                    <th>Jumlah Pelanggan</th>
-                    <th>Total Pendapatan</th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
+        </nav>
+        <div class="container mt-4">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Grafik Transaksi</h2>
+                    <form method="post" class="form-inline justify-content-center mb-4">
+                        <div class="form-group mx-sm-3 mb-2">
+                            <input type="date" name="tanggalA" id="tanggalA" class="form-control" required>
+                        </div>
+                        <div class="form-group mx-sm-3 mb-2">
+                            <input type="date" name="tanggalB" id="tanggalB" class="form-control" required>
+                        </div>
+                        <button type="submit" name="submit" class="btn btn-primary mb-2">Submit</button>
+                    </form>
+
+                    <div class="d-flex mb-3">
+                        <button name="print" onclick="window.print()" class="btn btn-secondary mr-3">Print</button>
+                        <button type="button" onclick="excel()" class="btn btn-success">Export to Excel</button>    
+                    </div>
+
+                    <div class="chart-container" style="width: 100%;">
+                        <canvas id="myChart"></canvas>
+                    </div>
+
+                    <table class="table mt-3">
+                        <thead class="thead-dark">
+                            <th>No</th>
+                            <th>Total</th>
+                            <th>Tanggal</th>
+                        </thead>
+                        <tbody>
                             <?php
-                                if(isset($jumlahPelanggan[0]["jumlah_pelanggan"])){
-                                    echo $jumlahPelanggan[0]["jumlah_pelanggan"];
+                                $no = 1;
+                                if(is_array($queryTanggal) && count($queryTanggal) > 0) {
+                                    foreach($queryTanggal as $data){
+                                        $total += $data["total"];
+                            ?>
+                            <tr>
+                                <td><?= $no++ ?></td>
+                                <td><?= "Rp " . number_format($data["total"]) ?></td>
+                                <td><?= $data["waktu_transaksi"] ?></td>
+                            </tr>
+                            <?php
+                                    }
                                 } else {
-                                    echo "0";
+                                    echo "<tr><td colspan='3'>Tidak ada data</td></tr>";
                                 }
                             ?>
-                        </td>
-                        <td>
+                        </tbody>
+                    </table>
+
+                    <table class="table">
+                        <thead class="thead-dark">
+                            <th>Jumlah Pelanggan</th>
+                            <th>Total Pendapatan</th>
+                        </thead>
+                        <tbody>
                             <?php
-                                if(isset($queryJumlahPendapatan[0]["total_pendapatan"])){
-                                    echo $queryJumlahPendapatan[0]["total_pendapatan"];
+                                if(isset($arrPelanggan[0]) && isset($arrPendapatan[0])) {
+                            ?>
+                            <tr>
+                                <td><?= $arrPelanggan[0]["total_pelanggan"] ?></td>
+                                <td><?= "Rp " . number_format($arrPendapatan[0]["total_pendapatan"]) ?></td>
+                            </tr>
+                            <?php
                                 } else {
-                                    echo "0";
+                                    echo "<tr><td colspan='2'>Tidak ada data</td></tr>";
                                 }
                             ?>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </body>
-    <script>
-        const ctx = document.getElementById('myChart');
-        const data = {
-            labels: [
 
-            ],
-            datasets: [{
-                label: 'Total',
-                data: [
+        <script>
+            const ctx = document.getElementById('myChart');
+            const data = {
+                labels: <?= json_encode(array_column($queryTanggal, 'waktu_transaksi')) ?>,
+                datasets: [{
+                    label: 'Total',
+                    data: <?= json_encode(array_column($queryTanggal, 'total')) ?>,
+                    borderColor: 'green',
+                    backgroundColor: 'grey',
+                }]
+            };
 
-                ],
-                borderColor: 'blue',
-                backgroundColor: 'blue',
-            }]
-        };
-
-        const config = {
-            type: 'bar',
-            data: data,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Chart.js Bar Chart'
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                            text: 'Chart.js Bar Chart'
+                        }
                     }
-                }
-            },
-        };
-
-        new Chart(ctx, config);
-    </script>
+                },
+            };
+            new Chart(ctx, config);
+        </script>
+    </body>
 </html>
+

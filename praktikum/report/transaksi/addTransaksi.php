@@ -40,6 +40,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../grafik/index.php">Grafik</a>
+                    </li>
                     <li class="nav-item active">
                         <a class="nav-link" href="../transaksi/transaksi.php">Transaksi</a>
                     </li>
