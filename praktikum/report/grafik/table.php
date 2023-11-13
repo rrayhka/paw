@@ -9,29 +9,29 @@
     $arrPelanggan = array();
     $arrPendapatan = array();
 
-        $tanggalA = $_GET["tanggalA"];
-        $tanggalB = $_GET["tanggalB"];
-        
-        $transaksi = mysqli_query(
-            $koneksi, 
-            "SELECT id, waktu_transaksi, sum(total) AS total FROM transaksi WHERE waktu_transaksi BETWEEN '$tanggalA' AND '$tanggalB' GROUP BY waktu_transaksi"
-        );
-        $queryTanggal = $transaksi ? mysqli_fetch_all($transaksi, MYSQLI_ASSOC) : array();
+    $tanggalA = $_GET["tanggalA"];
+    $tanggalB = $_GET["tanggalB"];
+    
+    $transaksi = mysqli_query(
+        $koneksi, 
+        "SELECT id, waktu_transaksi, sum(total) AS total FROM transaksi WHERE waktu_transaksi BETWEEN '$tanggalA' AND '$tanggalB' GROUP BY waktu_transaksi"
+    );
+    $queryTanggal = $transaksi ? mysqli_fetch_all($transaksi, MYSQLI_ASSOC) : array();
 
-        $jumlahPelanggan = mysqli_query(
-            $koneksi, 
-            "SELECT COUNT(DISTINCT pelanggan_id) AS total_pelanggan
-            FROM transaksi
-            WHERE waktu_transaksi BETWEEN '$tanggalA' AND '$tanggalB';"
-            );
-        $arrPelanggan = $jumlahPelanggan ? mysqli_fetch_all($jumlahPelanggan, MYSQLI_ASSOC) : array();
-        
-
-        $queryJumlahPendapatan = mysqli_query(
-                $koneksi, 
-                "SELECT sum(total) AS total_pendapatan FROM transaksi WHERE waktu_transaksi BETWEEN '$tanggalA' AND '$tanggalB'"
+    $jumlahPelanggan = mysqli_query(
+        $koneksi, 
+        "SELECT COUNT(DISTINCT pelanggan_id) AS total_pelanggan
+        FROM transaksi
+        WHERE waktu_transaksi BETWEEN '$tanggalA' AND '$tanggalB';"
         );
-        $arrPendapatan = $queryJumlahPendapatan ? mysqli_fetch_all($queryJumlahPendapatan, MYSQLI_ASSOC) : array();
+    $arrPelanggan = $jumlahPelanggan ? mysqli_fetch_all($jumlahPelanggan, MYSQLI_ASSOC) : array();
+    
+
+    $queryJumlahPendapatan = mysqli_query(
+            $koneksi, 
+            "SELECT sum(total) AS total_pendapatan FROM transaksi WHERE waktu_transaksi BETWEEN '$tanggalA' AND '$tanggalB'"
+    );
+    $arrPendapatan = $queryJumlahPendapatan ? mysqli_fetch_all($queryJumlahPendapatan, MYSQLI_ASSOC) : array();
 
 
 ?>
