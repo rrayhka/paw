@@ -44,6 +44,14 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+        <style type="text/css">
+            @media print{
+                .no-print, .no-print *{
+                    display: none !important;
+                }
+            }
+
+        </style>
         <title>Grafik</title>
     </head>
     <body>
@@ -84,7 +92,7 @@
             <div class="card">
                 <div class="card-body">
                     <h2 class="card-title text-center mb-4">Grafik Transaksi</h2>
-                    <form method="post" class="form-inline justify-content-center mb-4">
+                    <form method="post" class="form-inline justify-content-center mb-4 no-print">
                         <div class="form-group mx-sm-3 mb-2">
                             <input type="date" name="tanggalA" id="tanggalA" class="form-control" required>
                         </div>
@@ -95,9 +103,10 @@
                     </form>
 
                     <div class="d-flex mb-3">
-                        <button name="print" onclick="window.print()" class="btn btn-secondary mr-3">Print</button>
-                        <a href="table.php?tanggalA=<?= $tanggalA ?>&tanggalB=<?= $tanggalB ?>"><button type="button" class="btn btn-success">Export to Excel</button></a>    
-                        
+                        <button name="print" onclick="pagePrint()" class="btn btn-secondary mr-3 no-print">Print</button>
+                        <a href="table.php?tanggalA=<?= isset($tanggalA) ? $tanggalA : '' ?>&tanggalB=<?= isset($tanggalB) ? $tanggalB : '' ?>">
+                            <button type="button" class="btn btn-success no-print">Export to Excel</button>
+                        </a>
                     </div>
 
                     <div class="chart-container" style="width: 100%;">
@@ -184,6 +193,10 @@
                 },
             };
             new Chart(ctx, config);
+
+            function pagePrint() {
+                window.print();
+            }
         </script>
     </body>
 </html>
