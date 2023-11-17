@@ -35,11 +35,11 @@
                 </script>";
             exit; 
         }
-        $password = password_hash($password, PASSWORD_DEFAULT); 
+        $passwordEnc = md5($password);
         $result = mysqli_query(
             $koneksi, 
             "INSERT INTO user (id_user, username, password, nama, alamat, hp, level) VALUES
-            ('', '$username', '$password', '$nama', '$alamat', '$nomor', '$level')"
+            ('', '$username', '$passwordEnc', '$nama', '$alamat', '$nomor', '$level')"
         );
             
     }

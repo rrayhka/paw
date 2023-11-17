@@ -5,9 +5,11 @@
     $currentTime = date('H:i:s');
     $currentTimeWIB = date('H:i:s', strtotime('+7 hours', strtotime($currentTime)));
     $jenis_makanan = "Makanan";
-    $nomorMeja = isset($_GET["nomor_meja"]) ? $_GET["nomor_meja"] : 0 ;
     $makanan = "";
     $harga = 0;
+    $nomorMeja = isset($_GET["nomor_meja"]) ? $_GET["nomor_meja"] : 0;
+    $queryMeja = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM `table` WHERE sisa_kursi <> 0;"));
+                                var_dump($queryMeja);
     
     if(isset($_POST["jenis_makanan"])) {
         $jenis_makanan = $_POST["jenis_makanan"];
@@ -22,18 +24,26 @@
 
     if(isset($_POST["submit"])) {
         $nama_pembeli = $_POST["nama_pembeli"];
+        $nomorMeja = $_POST["nomor_meja"];
         $pelayan = $_POST["nama_pelayan"];
         $qty = $_POST["qty"];
         $no = $_POST["nomor_meja"];
         $menu = $_POST["makanan"];
         $total = $_POST["total"];
-        // $menu_id = "SELECT menu_id FROM menu WHERE nama_menu = '$menu'";
         $menu_id = mysqli_fetch_assoc(mysqli_query($conn, "SELECT menu_id FROM menu WHERE nama_menu = '$menu'"))["menu_id"];
         $status = "Menunggu";
-        // $query_harga2 = "SELECT harga FROM menu WHERE nama_menu = '$menu'";
         $harga = mysqli_fetch_assoc(mysqli_query($conn, "SELECT harga FROM menu WHERE nama_menu = '$menu'"))["harga"];
-        $query = "INSERT INTO `orders` VALUES (NULL, '$currentDate', '$currentTimeWIB', '$pelayan', '$no', '$total')";
-        mysqli_query($conn, $query);
+        var_dump($nomorMeja);
+
+        $nomorMejaTable = mysqli_query($conn, "SELECT * FROM `orders` WHERE nomor_meja = '$nomorMeja' ORDER BY order_id DESC LIMIT 1;");
+        $nomorMejaTable1 = mysqli_fetch_assoc($nomorMejaTable);
+        if($nomorMejaTable1["nomor_meja"] == $nomorMeja) {
+            echo "<script>
+                alert('Nomor Meja sudah digunakan!');
+            </script>";
+            return false;
+        }
+        $query = mysqli_query($conn, "INSERT INTO `orders` VALUES (NULL, '$currentDate', '$currentTimeWIB', '$pelayan', '$no', '$total')");
 
         if($query) {
             $orders_id = mysqli_insert_id($conn);
@@ -147,7 +157,7 @@
                                 <option value="" disabled selected>Silahkan pilih</option>
                                 <option value="Abdul">Abdul</option>
                                 <option value="Galih">Galih</option>
-                                <option value="Komeng">Ucok</option>
+                                <option value="Ucok">Ucok</option>
                                 <option value="Dika">Dika</option>
                             </select>
                         </div>
@@ -158,7 +168,7 @@
                     </div>
                     <div class="mt-4">
                         <label for="nomor_meja">Nomor Meja</label>
-                        <input type="number" name="nomor_meja" id="nomor_meja" class="form-control" placeholder="Masukkan nomor meja" required value="<?= $nomorMeja ?>">
+                        <input type="number" name="nomor_meja" id="nomor_meja" class="form-control" value="<?= $nomorMeja ?>">
                     </div>
                     <div class="mt-4">
                         <label for="jumlah">Jumlah</label>
@@ -192,3 +202,8 @@
     </script>
 </body>
 </html>
+
+
+<?php
+
+
