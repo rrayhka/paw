@@ -8,8 +8,10 @@
     $makanan = "";
     $harga = 0;
     $nomorMeja = isset($_GET["nomor_meja"]) ? $_GET["nomor_meja"] : 0;
-    $queryMeja = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM `table` WHERE sisa_kursi <> 0;"));
-                                var_dump($queryMeja);
+    $nomorMejaTable = mysqli_query($conn, "SELECT * FROM `orders` WHERE nomor_meja = '$nomorMeja' ORDER BY tanggal_order DESC limit 1");
+    $nomorMejaTable1 = mysqli_fetch_assoc($nomorMejaTable);
+    // $queryMeja = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM `table` WHERE sisa_kursi <> 0;"));
+    //                             var_dump($queryMeja);
     
     if(isset($_POST["jenis_makanan"])) {
         $jenis_makanan = $_POST["jenis_makanan"];
@@ -35,29 +37,53 @@
         $harga = mysqli_fetch_assoc(mysqli_query($conn, "SELECT harga FROM menu WHERE nama_menu = '$menu'"))["harga"];
         var_dump($nomorMeja);
 
-        $nomorMejaTable = mysqli_query($conn, "SELECT * FROM `orders` WHERE nomor_meja = '$nomorMeja' ORDER BY order_id DESC LIMIT 1;");
-        $nomorMejaTable1 = mysqli_fetch_assoc($nomorMejaTable);
         if($nomorMejaTable1["nomor_meja"] == $nomorMeja) {
-            echo "<script>
-                alert('Nomor Meja sudah digunakan!');
-            </script>";
-            return false;
-        }
-        $query = mysqli_query($conn, "INSERT INTO `orders` VALUES (NULL, '$currentDate', '$currentTimeWIB', '$pelayan', '$no', '$total')");
-
-        if($query) {
-            $orders_id = mysqli_insert_id($conn);
-            $subTotal = $qty * $harga;
-            $query = "INSERT INTO `order_detail` VALUES (NULL, '$orders_id', '$menu_id', '$qty', '$harga', '$subTotal', '$status')";
-            mysqli_query($conn, $query);
-            echo "<script>
-                alert('Data berhasil Ditambahkan!');
-                window.location.href = 'order.php';
-            </script>";
-        } else {
-            echo "<script>
-                alert('Data gagal Ditambahkan!');
-            </script>";
+            // $menit10 = date('H:i:s', strtotime('+10 minutes', strtotime($currentTimeWIB)));
+            $jam_sekarang = $nomorMejaTable1["tanggal_order"];
+            $sepuluhMenit = date('H:i:s', strtotime('+10 minutes', strtotime($jam_sekarang)));
+            if($currentTimeWIB < $sepuluhMenit) {
+                echo"
+                    <script>
+                        alert('Meja masih dalam proses pemesanan!, silahkan tunggu hingga $sepuluhMenit');
+                    </script>
+                ";
+                return false;
+            } else{
+                $query = mysqli_query($conn, "INSERT INTO `orders` VALUES (NULL, '$currentDate', '$currentTimeWIB', '$pelayan', '$no', '$total')");
+                if($query) {
+                    $orders_id = mysqli_insert_id($conn);
+                    $subTotal = $qty * $harga;
+                    $query = "INSERT INTO `order_detail` VALUES (NULL, '$orders_id', '$menu_id', '$qty', '$harga', '$subTotal', '$status')";
+                    mysqli_query($conn, $query);
+                    // echo "<script>
+                    //     alert('Data berhasil Ditambahkan!');
+                    //     window.location.href = 'order.php';
+                    // </script>";
+                } 
+                // else {
+                //     echo "<script>
+                //         alert('Data gagal Ditambahkan!');
+                //     </script>";
+                // }
+            }
+        } else{
+            $query = mysqli_query($conn, "INSERT INTO `orders` VALUES (NULL, '$currentDate', '$currentTimeWIB', '$pelayan', '$no', '$total')");
+    
+            if($query) {
+                $orders_id = mysqli_insert_id($conn);
+                $subTotal = $qty * $harga;
+                $query = "INSERT INTO `order_detail` VALUES (NULL, '$orders_id', '$menu_id', '$qty', '$harga', '$subTotal', '$status')";
+                mysqli_query($conn, $query);
+                // echo "<script>
+                //     alert('Data berhasil Ditambahkan!');
+                //     window.location.href = 'order.php';
+                // </script>";
+            } 
+            // else {
+            //     echo "<script>
+            //         alert('Data gagal Ditambahkan!');
+            //     </script>";
+            // }
         }
     }
 
