@@ -1,17 +1,17 @@
 <?php
+    $nomorMeja = isset($_GET["nomor_meja"]) ? $_GET["nomor_meja"] : 0;
     session_start();
     include "../koneksi.php";
+    date_default_timezone_set('Asia/Jakarta');
     $currentDate = date('Y-m-d');
     $currentTime = date('H:i:s');
-    $currentTimeWIB = date('H:i:s', strtotime('+7 hours', strtotime($currentTime)));
+    $query_last_transaction = mysqli_query($conn, "SELECT tanggal_order, jam_order FROM `orders` WHERE nomor_meja = '$nomorMeja' ORDER BY order_id DESC LIMIT 1");
+    $last_transaction = mysqli_fetch_assoc($query_last_transaction);
+    $last_transaction_time = ($last_transaction && isset($last_transaction["jam_order"])) ? strtotime($last_transaction["jam_order"]) : 0;
+    $current_time = strtotime($currentTime);
     $jenis_makanan = "Makanan";
     $makanan = "";
     $harga = 0;
-    $nomorMeja = isset($_GET["nomor_meja"]) ? $_GET["nomor_meja"] : 0;
-    $nomorMejaTable = mysqli_query($conn, "SELECT * FROM `orders` WHERE nomor_meja = '$nomorMeja' ORDER BY tanggal_order DESC limit 1");
-    $nomorMejaTable1 = mysqli_fetch_assoc($nomorMejaTable);
-    // $queryMeja = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM `table` WHERE sisa_kursi <> 0;"));
-    //                             var_dump($queryMeja);
     
     if(isset($_POST["jenis_makanan"])) {
         $jenis_makanan = $_POST["jenis_makanan"];
@@ -36,57 +36,54 @@
         $status = "Menunggu";
         $harga = mysqli_fetch_assoc(mysqli_query($conn, "SELECT harga FROM menu WHERE nama_menu = '$menu'"))["harga"];
         var_dump($nomorMeja);
-
-        if($nomorMejaTable1["nomor_meja"] == $nomorMeja) {
-            // $menit10 = date('H:i:s', strtotime('+10 minutes', strtotime($currentTimeWIB)));
-            $jam_sekarang = $nomorMejaTable1["tanggal_order"];
-            $sepuluhMenit = date('H:i:s', strtotime('+10 minutes', strtotime($jam_sekarang)));
-            if($currentTimeWIB < $sepuluhMenit) {
-                echo"
-                    <script>
-                        alert('Meja masih dalam proses pemesanan!, silahkan tunggu hingga $sepuluhMenit');
-                    </script>
-                ";
-                return false;
+        if ($last_transaction){
+            $time_difference = $current_time - $last_transaction_time;
+            if ($time_difference < 600) {
+                $remaining_time = 600 - $time_difference;
+                $remaining_minutes = ceil($remaining_time / 60);
+                
+                echo "<script>
+                        alert('Meja masih dalam proses pemesanan! Silahkan tunggu hingga $remaining_minutes menit.');
+                    </script>";
             } else{
-                $query = mysqli_query($conn, "INSERT INTO `orders` VALUES (NULL, '$currentDate', '$currentTimeWIB', '$pelayan', '$no', '$total')");
+                $query = "INSERT INTO `orders` VALUES (NULL, '$currentDate', '$currentTime', '$pelayan', '$nomorMeja', '$total')";
+                mysqli_query($conn, $query);
+
                 if($query) {
                     $orders_id = mysqli_insert_id($conn);
                     $subTotal = $qty * $harga;
                     $query = "INSERT INTO `order_detail` VALUES (NULL, '$orders_id', '$menu_id', '$qty', '$harga', '$subTotal', '$status')";
                     mysqli_query($conn, $query);
-                    // echo "<script>
-                    //     alert('Data berhasil Ditambahkan!');
-                    //     window.location.href = 'order.php';
-                    // </script>";
-                } 
-                // else {
-                //     echo "<script>
-                //         alert('Data gagal Ditambahkan!');
-                //     </script>";
-                // }
-            }
-        } else{
-            $query = mysqli_query($conn, "INSERT INTO `orders` VALUES (NULL, '$currentDate', '$currentTimeWIB', '$pelayan', '$no', '$total')");
-    
+                    echo "<script>
+                        alert('Data berhasil Ditambahkan!');
+                        window.location.href = 'order.php';
+                    </script>";
+                } else {
+                    echo "<script>
+                        alert('Data gagal Ditambahkan!');
+                    </script>";
+                }
+            } 
+        }else{
+            $query = "INSERT INTO `orders` VALUES (NULL, '$currentDate', '$currentTime', '$pelayan', '$nomorMeja', '$total')";
+            mysqli_query($conn, $query);
+
             if($query) {
                 $orders_id = mysqli_insert_id($conn);
                 $subTotal = $qty * $harga;
                 $query = "INSERT INTO `order_detail` VALUES (NULL, '$orders_id', '$menu_id', '$qty', '$harga', '$subTotal', '$status')";
                 mysqli_query($conn, $query);
-                // echo "<script>
-                //     alert('Data berhasil Ditambahkan!');
-                //     window.location.href = 'order.php';
-                // </script>";
-            } 
-            // else {
-            //     echo "<script>
-            //         alert('Data gagal Ditambahkan!');
-            //     </script>";
-            // }
+                echo "<script>
+                    alert('Data berhasil Ditambahkan!');
+                    window.location.href = 'order.php';
+                </script>";
+            } else {
+                echo "<script>
+                    alert('Data gagal Ditambahkan!');
+                </script>";
+            }
         }
     }
-
 
 
 ?>
@@ -170,7 +167,7 @@
                 </div>
                 <div class="mt-4">
                         <label for="jam">Jam</label>
-                        <input type="time" name="jam" id="jam" class="form-control" value="<?= $currentTimeWIB; ?>" readonly>
+                        <input type="time" name="jam" id="jam" class="form-control" value="<?= $currentTime; ?>" readonly>
                 </div>
             </div>
             <div class="col">
@@ -228,8 +225,3 @@
     </script>
 </body>
 </html>
-
-
-<?php
-
-
