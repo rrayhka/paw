@@ -119,9 +119,9 @@ if (isset($_GET['order_id'])) {
                         <th>
                             Tanggal
                             <?php if(!isset($data_sort['sort']) || $data_sort['sort'] == 'ascT'): ?>
-                                <a href='?sort=descT'><i class="fa fa-sort-asc"></i></a>
+                                <a href="<?= (!isset($_GET["page"])) ? '?' : "?page=$_GET[page]&"; ?>sort=descT"><i class="fa fa-sort-asc"></i></a>
                             <?php else: ?>
-                                <a href='?sort=ascT'><i class="fa fa-sort-desc"></i></a>
+                                <a href='<?= (!isset($_GET["page"])) ? '?' : "?page=$_GET[page]&"; ?>sort=ascT'><i class="fa fa-sort-desc"></i></a>
                             <?php endif; ?>
                         </th>
                         <th>Jam</th>
@@ -129,9 +129,9 @@ if (isset($_GET['order_id'])) {
                         <th>
                             No Meja
                             <?php if(!isset($data_sort['sort']) || $data_sort['sort'] == 'ascM'): ?>
-                                <a href='?sort=descM'><i class="fa fa-sort-asc"></i></a>
+                                <a href='<?= (!isset($_GET["page"])) ? '?' : "?page=$_GET[page]&"; ?>sort=descM'><i class="fa fa-sort-asc"></i></a>
                             <?php else: ?>
-                                <a href='?sort=ascM'><i class="fa fa-sort-desc"></i></a>
+                                <a href='<?= (!isset($_GET["page"])) ? '?' : "?page=$_GET[page]&"; ?>sort=ascM'><i class="fa fa-sort-desc"></i></a>
                             <?php endif; ?>
                         </th>
                         <th>
@@ -140,9 +140,9 @@ if (isset($_GET['order_id'])) {
                         <th>
                             Total Harga
                             <?php if(!isset($data_sort['sort']) || $data_sort['sort'] == 'ascTo'): ?>
-                                <a href='?sort=descTo'><i class="fa fa-sort-asc"></i></a>
+                                <a href='<?= (!isset($_GET["page"])) ? '?' : "?page=$_GET[page]&"; ?>sort=descTo'><i class="fa fa-sort-asc"></i></a>
                             <?php else: ?>
-                                <a href='?sort=ascTo'><i class="fa fa-sort-desc"></i></a>
+                                <a href='<?= (!isset($_GET["page"])) ? '?' : "?page=$_GET[page]&"; ?>sort=ascTo'><i class="fa fa-sort-desc"></i></a>
                             <?php endif; ?>
                         </th>
                         <th>Edit</th>
@@ -175,6 +175,7 @@ if (isset($_GET['order_id'])) {
             </table>
         </div>
         <nav>
+            <!-- <span>Halaman <?= $halaman_awal + 1 . " - " . $batas ?></span> -->
             <ul class="pagination justify-content-center">
 				<li class="page-item <?= ($halaman <= 1) ? "disabled" : ''; ?>">
 					<a class="page-link" href='<?= (!isset($_GET["sort"])) ? "?" : "?sort=$_GET[sort]&"; ?>page=<?= $previous ?>'>Previous</a>
