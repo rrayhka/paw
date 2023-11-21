@@ -133,71 +133,73 @@
                 </form>
             </tbody>
         </table>
-        <table class="table table-striped table-bordered text-center table-hover">
-            <thead class="table-primary">
-                <th>Nomor</th>
-                <th>Order id</th>
-                <th>Menu id</th>
-                <th>Jumlah</th>
-                <th>Harga Satuan</th>
-                <th>SubTotal</th>
-                <th>Status</th>
-                <th>Aksi</th>
-            </thead>
-            <tbody>
-                <?php
-                    $query = mysqli_query($conn, "SELECT * FROM order_detail WHERE order_id = $order_id");
-                    $status = [
-                        'Sudah Dilayani',
-                        'Belum Dilayani',
-                        'Sedang Dilayani',
-                        'Selesai'
-                    ];
-                    while($data = mysqli_fetch_assoc($query)){ 
-                ?>
-                <tr>
-                    <!-- <td><?php echo $data["order_detail_id"] ?></td> -->
-                    <td><?php echo $nomor++; ?></td>
-                    <td><?php echo $data['order_id']; ?></td>
-                    <td><?php echo $data['menu_id']; ?></td>
-                    <td><?php echo $data['jumlah']; ?></td>
-                    <td><?php echo $data['harga']; ?></td>
-                    <td><?php echo number_format($data['sub_total']); ?></td>
-                    <td>
-                        <form method="post">
-                            <?php if($data['status'] !== "Selesai") : ?>
-                                <select name="status" id="" onchange="this.form.submit()">
-                                    <option value="<?= $data['status'] ?>"><?= $data['status'] ?></option>
-                                    <?php foreach($status as $key => $value) : ?>
-                                        <option value="<?= $value ?>"><?= $value ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            <?php else : ?>
-                                <button class="btn btn-success">Selesai</button>
-                            <?php endif ?>
-                            <input type="hidden" name="detail_order_id" value="<?php echo $data['order_detail_id']; ?>">
-                        </form>
-                    </td>
-                    <td>
-                        <a class="btn btn-danger" href="ordersDetail.php?order_detail_id=<?= $data['order_detail_id']; ?>&order_id=<?= $order_id; ?>" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</a>
-                    </td>
-                </tr>
-                <?php } ?>
-                <tr>
-                    <td colspan="6" class="text-center">
-                        Total Pembayaran
-                    </td>
-                    <td colspan="2">
-                        <?php
-                            $query = mysqli_query($conn, "SELECT SUM(sub_total) AS total FROM order_detail WHERE order_id = $order_id");
-                            $data = mysqli_fetch_assoc($query);
-                            $total = $data['total'];
-                            echo " Rp ". number_format($data['total']);
-                        ?>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered text-center table-hover">
+                <thead class="table-primary">
+                    <th>Nomor</th>
+                    <th>Order id</th>
+                    <th>Menu id</th>
+                    <th>Jumlah</th>
+                    <th>Harga Satuan</th>
+                    <th>SubTotal</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </thead>
+                <tbody>
+                    <?php
+                        $query = mysqli_query($conn, "SELECT * FROM order_detail WHERE order_id = $order_id");
+                        $status = [
+                            'Sudah Dilayani',
+                            'Belum Dilayani',
+                            'Sedang Dilayani',
+                            'Selesai'
+                        ];
+                        while($data = mysqli_fetch_assoc($query)){ 
+                    ?>
+                    <tr>
+                        <!-- <td><?php echo $data["order_detail_id"] ?></td> -->
+                        <td><?php echo $nomor++; ?></td>
+                        <td><?php echo $data['order_id']; ?></td>
+                        <td><?php echo $data['menu_id']; ?></td>
+                        <td><?php echo $data['jumlah']; ?></td>
+                        <td><?php echo $data['harga']; ?></td>
+                        <td><?php echo number_format($data['sub_total']); ?></td>
+                        <td>
+                            <form method="post">
+                                <?php if($data['status'] !== "Selesai") : ?>
+                                    <select name="status" id="" onchange="this.form.submit()">
+                                        <option value="<?= $data['status'] ?>"><?= $data['status'] ?></option>
+                                        <?php foreach($status as $key => $value) : ?>
+                                            <option value="<?= $value ?>"><?= $value ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php else : ?>
+                                    <button class="btn btn-success">Selesai</button>
+                                <?php endif ?>
+                                <input type="hidden" name="detail_order_id" value="<?php echo $data['order_detail_id']; ?>">
+                            </form>
+                        </td>
+                        <td>
+                            <a class="btn btn-danger" href="ordersDetail.php?order_detail_id=<?= $data['order_detail_id']; ?>&order_id=<?= $order_id; ?>" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</a>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            Total Pembayaran
+                        </td>
+                        <td colspan="2">
+                            <?php
+                                $query = mysqli_query($conn, "SELECT SUM(sub_total) AS total FROM order_detail WHERE order_id = $order_id");
+                                $data = mysqli_fetch_assoc($query);
+                                $total = $data['total'];
+                                echo " Rp ". number_format($data['total']);
+                            ?>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>

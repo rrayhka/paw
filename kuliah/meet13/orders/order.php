@@ -56,14 +56,14 @@ if (isset($_GET['order_id'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Warungku</title>
+<title>Warungku</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css"></head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
+</head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
@@ -73,6 +73,16 @@ if (isset($_GET['order_id'])) {
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
+                    <!-- <li>
+                        <form  method="post">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="Search" name="search">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="submit">Search</button>
+                                </div>
+                            </div>
+                        </form>
+                    </li> -->
                     <li class="nav-item active">
                         <a class="nav-link" href="../orders/order.php">Order</a>
                     </li>
@@ -99,79 +109,71 @@ if (isset($_GET['order_id'])) {
             <div class="col-auto me-auto">
                 <a href="addOrder.php" class="btn btn-primary mb-3">Tambah Orders</a>
             </div>
-            <div class="col-auto">
-                <form  method="post">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Search" name="search">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="submit">Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
         </div>
-        <table class="table table-striped table-bordered text-center">
-            <thead class="table-primary">
-                <tr>
-                    <th>No</th>
-                    <th>Kode Order</th>
-                    <th>
-                        Tanggal
-                        <?php if(!isset($data_sort['sort']) || $data_sort['sort'] == 'ascT'): ?>
-                            <a href='?sort=descT'><i class="fa fa-sort-asc"></i></a>
-                        <?php else: ?>
-                            <a href='?sort=ascT'><i class="fa fa-sort-desc"></i></a>
-                        <?php endif; ?>
-                    </th>
-                    <th>Jam</th>
-                    <th>Pelayan</th>
-                    <th>
-                        No Meja
-                        <?php if(!isset($data_sort['sort']) || $data_sort['sort'] == 'ascM'): ?>
-                            <a href='?sort=descM'><i class="fa fa-sort-asc"></i></a>
-                        <?php else: ?>
-                            <a href='?sort=ascM'><i class="fa fa-sort-desc"></i></a>
-                        <?php endif; ?>
-                    </th>
-                    <th>
-                        Jumlah Order
-                    </th>
-                    <th>
-                        Total Harga
-                        <?php if(!isset($data_sort['sort']) || $data_sort['sort'] == 'ascTo'): ?>
-                            <a href='?sort=descTo'><i class="fa fa-sort-asc"></i></a>
-                        <?php else: ?>
-                            <a href='?sort=ascTo'><i class="fa fa-sort-desc"></i></a>
-                        <?php endif; ?>
-                    </th>
-                    <th>Edit</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                    while ($row = mysqli_fetch_array($sort)){
-                        $raw_total = mysqli_query($conn, "SELECT SUM(jumlah) AS jumlah_order, SUM(sub_total) total FROM order_detail WHERE order_id = '$row[order_id]'");
-                        $order_detail = mysqli_fetch_array($raw_total);
-                ?>
-                <tr>
-                    <td><?= $count++ ?></td>
-                    <td><?= $row['order_id'] ?></td>
-                    <td><?= $row['tanggal_order'] ?></td>
-                    <td><?= $row['jam_order'] ?></td>
-                    <td><?= $row['nama_pelayan'] ?></td>
-                    <td><?= $row['nomor_meja'] ?></td>
-                    <td><?= $order_detail['jumlah_order'] ?></td>
-                    <td>Rp <?= number_format($row['total_bayar']) ?></td>
-                    <td>
-                        <a href="ordersDetail.php?order_id=<?= $row['order_id'] ?>" class="btn btn-primary">Detail</a>
-                        <a href="order.php?order_id=<?= $row['order_id'] ?>" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus order dengan ID <?= $row['order_id'] ?>?')">Hapus</a>
-                    </td>
-                </tr>
-                <?php
-                    }
-                ?>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered text-center table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>No</th>
+                        <th>Kode Order</th>
+                        <th>
+                            Tanggal
+                            <?php if(!isset($data_sort['sort']) || $data_sort['sort'] == 'ascT'): ?>
+                                <a href='?sort=descT'><i class="fa fa-sort-asc"></i></a>
+                            <?php else: ?>
+                                <a href='?sort=ascT'><i class="fa fa-sort-desc"></i></a>
+                            <?php endif; ?>
+                        </th>
+                        <th>Jam</th>
+                        <th>Pelayan</th>
+                        <th>
+                            No Meja
+                            <?php if(!isset($data_sort['sort']) || $data_sort['sort'] == 'ascM'): ?>
+                                <a href='?sort=descM'><i class="fa fa-sort-asc"></i></a>
+                            <?php else: ?>
+                                <a href='?sort=ascM'><i class="fa fa-sort-desc"></i></a>
+                            <?php endif; ?>
+                        </th>
+                        <th>
+                            Jumlah Order
+                        </th>
+                        <th>
+                            Total Harga
+                            <?php if(!isset($data_sort['sort']) || $data_sort['sort'] == 'ascTo'): ?>
+                                <a href='?sort=descTo'><i class="fa fa-sort-asc"></i></a>
+                            <?php else: ?>
+                                <a href='?sort=ascTo'><i class="fa fa-sort-desc"></i></a>
+                            <?php endif; ?>
+                        </th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                        while ($row = mysqli_fetch_array($sort)){
+                            $raw_total = mysqli_query($conn, "SELECT SUM(jumlah) AS jumlah_order, SUM(sub_total) total FROM order_detail WHERE order_id = '$row[order_id]'");
+                            $order_detail = mysqli_fetch_array($raw_total);
+                    ?>
+                    <tr>
+                        <td><?= $count++ ?></td>
+                        <td><?= $row['order_id'] ?></td>
+                        <td><?= $row['tanggal_order'] ?></td>
+                        <td><?= $row['jam_order'] ?></td>
+                        <td><?= $row['nama_pelayan'] ?></td>
+                        <td><?= $row['nomor_meja'] ?></td>
+                        <td><?= $order_detail['jumlah_order'] ?></td>
+                        <td>Rp <?= number_format($row['total_bayar']) ?></td>
+                        <td>
+                            <a href="ordersDetail.php?order_id=<?= $row['order_id'] ?>" class="btn btn-primary">Detail</a>
+                            <a href="order.php?order_id=<?= $row['order_id'] ?>" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus order dengan ID <?= $row['order_id'] ?>?')">Hapus</a>
+                        </td>
+                    </tr>
+                    <?php
+                        }
+                    ?>
+                </tbody>
+            </table>
+        </div>
         <nav>
             <ul class="pagination justify-content-center">
 				<li class="page-item <?= ($halaman <= 1) ? "disabled" : ''; ?>">

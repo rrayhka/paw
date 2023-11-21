@@ -65,41 +65,43 @@
 <div class="container mt-3">
     <h1 class="mb-3">Daftar Menu</h1>
     <a href="addMenu.php" class="btn btn-primary mb-3">Tambah Menu</a>
-    <table class="table table-striped table-bordered text-center">
-        <thead class="table-primary">
-            <th>No</th>
-            <th>
-                <a href="<?php echo $_SERVER['PHP_SELF']; ?>?sort=nama_menu&order=<?php echo ($sort === 'nama_menu' && $order === 'asc') ? 'desc' : 'asc'; ?>" style="color: black;">
-                    Nama <i class="fa fa-sort<?php echo ($sort === 'nama_menu' && $order === 'asc') ? '-asc' : '-desc'; ?>" style="color: black;"></i>
-                </a>
-            </th>
-            <th>
-                <a href="<?php echo $_SERVER['PHP_SELF']; ?>?sort=harga&order=<?php echo ($sort === 'harga' && $order === 'asc') ? 'desc' : 'asc'; ?>" style="color: black;"> 
-                    Harga <i class="fa fa-sort<?php echo ($sort === 'harga' && $order === 'asc') ? '-asc' : '-desc'; ?>" style="color: black;"></i>
-                </a>
-            </th>
-            <th>
-                <a href="<?php echo $_SERVER['PHP_SELF']; ?>?sort=kategori&order=<?php echo ($sort === 'kategori' && $order === 'asc') ? 'desc' : 'asc'; ?>" style="color: black;">
-                    Kategori <i class="fa fa-sort<?php echo ($sort === 'kategori' && $order === 'asc') ? '-asc' : '-desc'; ?>" style="color: black;"></i>
-                </a>
-            </th>
-            <th>Tindakan</th>
-        </thead>
-        <tbody>
-            <?php while($row = mysqli_fetch_assoc($result)): ?>
-                <tr>
-                    <td><?php echo $count++; ?></td>
-                    <td><?php echo $row['nama_menu']; ?></td>
-                    <td><?php echo $row['harga']; ?></td>
-                    <td><?php echo $row['kategori']; ?></td>
-                    <td>
-                        <a href="editMenu.php?id=<?php echo $row['menu_id']; ?>" class="btn btn-primary">Edit</a>
-                        <a href="<?php echo $_SERVER['PHP_SELF']; ?>?menu_id=<?php echo $row['menu_id']; ?>" onclick="return confirm('Apakah anda yakin ingin menghapus menu ini?')" class="btn btn-danger">Hapus</a>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered text-center">
+            <thead class="table-primary">
+                <th>No</th>
+                <th>
+                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?sort=nama_menu&order=<?php echo ($sort === 'nama_menu' && $order === 'asc') ? 'desc' : 'asc'; ?>" style="color: black;">
+                        Nama <i class="fa fa-sort<?php echo ($sort === 'nama_menu' && $order === 'asc') ? '-asc' : '-desc'; ?>" style="color: black;"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?sort=harga&order=<?php echo ($sort === 'harga' && $order === 'asc') ? 'desc' : 'asc'; ?>" style="color: black;"> 
+                        Harga <i class="fa fa-sort<?php echo ($sort === 'harga' && $order === 'asc') ? '-asc' : '-desc'; ?>" style="color: black;"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="<?php echo $_SERVER['PHP_SELF']; ?>?sort=kategori&order=<?php echo ($sort === 'kategori' && $order === 'asc') ? 'desc' : 'asc'; ?>" style="color: black;">
+                        Kategori <i class="fa fa-sort<?php echo ($sort === 'kategori' && $order === 'asc') ? '-asc' : '-desc'; ?>" style="color: black;"></i>
+                    </a>
+                </th>
+                <th>Tindakan</th>
+            </thead>
+            <tbody>
+                <?php while($row = mysqli_fetch_assoc($result)): ?>
+                    <tr>
+                        <td><?php echo $count++; ?></td>
+                        <td><?php echo $row['nama_menu']; ?></td>
+                        <td><?php echo $row['harga']; ?></td>
+                        <td><?php echo $row['kategori']; ?></td>
+                        <td>
+                            <a href="editMenu.php?id=<?php echo $row['menu_id']; ?>" class="btn btn-primary">Edit</a>
+                            <a href="<?php echo $_SERVER['PHP_SELF']; ?>?menu_id=<?php echo $row['menu_id']; ?>" onclick="return confirm('Apakah anda yakin ingin menghapus menu ini?')" class="btn btn-danger">Hapus</a>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 </body>
 </html>
