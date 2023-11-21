@@ -1,6 +1,18 @@
 <?php
 include "../koneksi.php";
-$data = mysqli_query($conn,"SELECT * FROM orders");
+
+$batas = 5;
+$halaman = isset($_GET['page'])?(int)$_GET['page'] : 1;
+$halaman_awal = ($halaman>1) ? ($halaman * $batas) - $batas : 0;
+$previous = $halaman - 1;
+$next = $halaman + 1;
+
+$data1 = mysqli_query($conn,"SELECT * FROM orders");
+$jumlah_data = mysqli_num_rows($data1);
+$total_halaman = ceil($jumlah_data / $batas);
+$count = $halaman_awal+1;
+
+$data = mysqli_query($conn, "SELECT * FROM orders LIMIT $halaman_awal, $batas");
 
 $sort_tgl_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY tanggal_order DESC");
 $sort_tgl_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY tanggal_order");
@@ -63,9 +75,6 @@ if (isset($_GET['order_id'])) {
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="../orderdetail/admin.php">Order Detail</a>
-                    </li> -->
                     <li class="nav-item active">
                         <a class="nav-link" href="../orders/order.php">Order</a>
                     </li>
@@ -88,8 +97,21 @@ if (isset($_GET['order_id'])) {
 
     <div class="container mt-3">
         <h1 class="mb-3">Daftar Order</h1>
-        <a href="addOrder.php" class="btn btn-primary mb-3">Tambah Orders</a>
-        <!-- <a href="addOrder.php?"></a> -->
+        <div class="row">
+            <div class="col-auto me-auto">
+                <a href="addOrder.php" class="btn btn-primary mb-3">Tambah Orders</a>
+            </div>
+            <div class="col-auto">
+                <form  method="post">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Search" name="search">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
         <table class="table table-striped table-bordered text-center">
             <thead class="table-primary">
                 <tr>
@@ -129,7 +151,6 @@ if (isset($_GET['order_id'])) {
             </thead>
             <tbody>
                 <?php
-                    $count = 1;
                     while ($row = mysqli_fetch_array($sort)){
                         $raw_total = mysqli_query($conn, "SELECT SUM(jumlah) AS jumlah_order, SUM(sub_total) total FROM order_detail WHERE order_id = '$row[order_id]'");
                         $order_detail = mysqli_fetch_array($raw_total);
@@ -153,6 +174,25 @@ if (isset($_GET['order_id'])) {
                 ?>
             </tbody>
         </table>
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item <?php if($halaman <= 1) { echo 'disabled'; } ?>">
+                    <a class="page-link" <?php if($halaman > 1) { echo "href='?page=$previous'"; } ?>>Previous</a>
+                </li>
+                <?php 
+                for($x = 1; $x <= $total_halaman; $x++) {
+                    ?> 
+                    <li class="page-item <?php if($halaman == $x) { echo 'active'; } ?>">
+                        <a class="page-link" href="?page=<?php echo $x ?>"><?php echo $x; ?></a>
+                    </li>
+                    <?php
+                }
+                ?>				
+                <li class="page-item <?php if($halaman >= $total_halaman) { echo 'disabled'; } ?>">
+                    <a class="page-link" <?php if($halaman < $total_halaman) { echo "href='?page=$next'"; } ?>>Next</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </body>
 </html>
