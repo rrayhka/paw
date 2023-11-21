@@ -174,22 +174,18 @@ if (isset($_GET['order_id'])) {
         </table>
         <nav>
             <ul class="pagination justify-content-center">
-                <li class="page-item <?php if($halaman <= 1) { echo 'disabled'; } ?>">
-                    <a class="page-link" <?php if($halaman > 1) { echo "href='?page=$previous'"; } ?>>Previous</a>
-                </li>
-                <?php 
-                for($x = 1; $x <= $total_halaman; $x++) {
-                    ?> 
-                    <li class="page-item <?php if($halaman == $x) { echo 'active'; } ?>">
-                        <a class="page-link" href="?page=<?php echo $x ?>"><?php echo $x; ?></a>
-                    </li>
-                    <?php
-                }
-                ?>				
-                <li class="page-item <?php if($halaman >= $total_halaman) { echo 'disabled'; } ?>">
-                    <a class="page-link" <?php if($halaman < $total_halaman) { echo "href='?page=$next'"; } ?>>Next</a>
-                </li>
-            </ul>
+				<li class="page-item <?= ($halaman <= 1) ? "disabled" : ''; ?>">
+					<a class="page-link" href='<?= (!isset($_GET["sort"])) ? "?" : "?sort=$_GET[sort]&"; ?>page=<?= $previous ?>'>Previous</a>
+				</li>
+				<?php for ($x = 1; $x <= $total_halaman; $x++) { ?>
+					<li class="page-item <?= ($halaman == $x) ? "active" : ''; ?>">
+						<a class="page-link" href='<?= (!isset($_GET["sort"])) ? "?" : "?sort=$_GET[sort]&"; ?>page=<?= $x ?>'><?= $x ?></a>
+					</li>
+				<?php } ?>
+				<li class="page-item <?= ($halaman >= $total_halaman) ? "disabled" : ''; ?>">
+					<a class="page-link" href='<?= (!isset($_GET["sort"])) ? '?' : "?sort=$_GET[sort]&"; ?>page=<?= $next ?>'>Next</a>
+				</li>
+			</ul>
         </nav>
     </div>
 </body>
