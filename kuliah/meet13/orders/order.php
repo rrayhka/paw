@@ -14,12 +14,12 @@ $count = $halaman_awal+1;
 
 $data = mysqli_query($conn, "SELECT * FROM orders LIMIT $halaman_awal, $batas");
 
-$sort_tgl_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY tanggal_order DESC");
-$sort_tgl_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY tanggal_order");
-$sort_meja_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY nomor_meja DESC");
-$sort_meja_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY nomor_meja");
-$sort_total_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY total_bayar DESC");
-$sort_total_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY total_bayar");
+$sort_tgl_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY tanggal_order DESC LIMIT $halaman_awal, $batas");
+$sort_tgl_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY tanggal_order LIMIT $halaman_awal, $batas");
+$sort_meja_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY nomor_meja DESC LIMIT $halaman_awal, $batas");
+$sort_meja_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY nomor_meja LIMIT $halaman_awal, $batas");
+$sort_total_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY total_bayar DESC LIMIT $halaman_awal, $batas");
+$sort_total_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY total_bayar LIMIT $halaman_awal, $batas");
 
 if(isset($_GET['sort'])){
 	$data_sort = $_GET;
@@ -56,16 +56,13 @@ if (isset($_GET['order_id'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WarungKU Menu</title>
+    <title>Warungku</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-</head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css"></head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">

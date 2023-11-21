@@ -25,7 +25,7 @@
             $query = mysqli_query($conn, "UPDATE orders SET total_bayar = $total WHERE order_id = $order_id");
             echo "<script>
             alert('Data berhasil Ditambahkan!');
-            window.location.href = 'order.php';
+            window.reload();
             </script>";
         }
     }
@@ -35,7 +35,9 @@
         $status1 = $_POST["status"];
         $sql = mysqli_query($conn, "UPDATE order_detail SET status = '$status1' WHERE order_detail_id = $detail_order_id");
         if($sql) {
-            header("Location: order.php");
+            echo "<script>
+                window.reload();
+            </script>";
         } else {
             echo "Gagal mengubah status";
         }
@@ -50,8 +52,10 @@
             $hapus = mysqli_query($conn, "DELETE FROM order_detail WHERE order_detail_id = $order_detail_id");
             if($hapus){
                 $update = mysqli_query($conn, "UPDATE orders SET total_bayar = (SELECT SUM(sub_total) FROM order_detail WHERE order_id = $order_id) WHERE order_id = $order_id");
-                // header("Location: ordersDetail.php?order_id=$order_id");
-                header("Location: order.php");
+                header("Location: ordersDetail.php?order_id=$order_id");
+                echo "<script>
+                    window.reload();
+                </script>";
             }
         }
 ?>
@@ -59,10 +63,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Page</title>
+    <title>Warungku</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
