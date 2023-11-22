@@ -195,7 +195,6 @@ if(isset($_POST["search"])){
             </table>
         </div>
         <nav>
-            <!-- <span>Halaman <?= $halaman_awal + 1 . " - " . $batas ?></span> -->
             <ul class="pagination justify-content-center">
                 <li class="page-item <?= ($halaman <= 1) ? "disabled" : ''; ?>">
                     <a class="page-link" href='<?= (!isset($_GET["sort"])) ? "?" : "?sort=$_GET[sort]&"; ?>page=<?= $previous ?>'>Previous</a>

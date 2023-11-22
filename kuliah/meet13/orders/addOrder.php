@@ -1,9 +1,9 @@
 <?php
     session_start();
     include "../koneksi.php";
+    date_default_timezone_set('Asia/Jakarta');
     $currentDate = date('Y-m-d');
-    $currentTime = date('H:i:s');
-    $currentTimeWIB = date('H:i:s', strtotime('+7 hours', strtotime($currentTime)));
+    $currentTimeWIB = date('H:i:s'); 
     $jenis_makanan = "Makanan";
     $nomorMeja = 5;
     $makanan = "";
@@ -27,10 +27,8 @@
         $no = $_POST["nomor_meja"];
         $menu = $_POST["makanan"];
         $total = $_POST["total"];
-        // $menu_id = "SELECT menu_id FROM menu WHERE nama_menu = '$menu'";
         $menu_id = mysqli_fetch_assoc(mysqli_query($conn, "SELECT menu_id FROM menu WHERE nama_menu = '$menu'"))["menu_id"];
         $status = "Menunggu";
-        // $query_harga2 = "SELECT harga FROM menu WHERE nama_menu = '$menu'";
         $harga = mysqli_fetch_assoc(mysqli_query($conn, "SELECT harga FROM menu WHERE nama_menu = '$menu'"))["harga"];
         $query = "INSERT INTO `orders` VALUES (NULL, '$currentDate', '$currentTimeWIB', '$pelayan', '$no', '$total')";
         mysqli_query($conn, $query);
