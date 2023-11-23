@@ -7,6 +7,18 @@
             header("Location: transaksi.php");
         }
     }
+    $batas = 5;
+    $halaman = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $halaman_awal = ($halaman > 1) ? ($halaman * $batas) - $batas : 0;
+    $previous = $halaman - 1;
+    $next = $halaman + 1;
+    $data = mysqli_query($koneksi, "SELECT * FROM transaksi");
+    $jumlah_data = mysqli_num_rows($data);
+    $total_halaman = ceil($jumlah_data / $batas);
+    $no = $halaman_awal + 1;
+    $query = mysqli_query($koneksi, "SELECT DISTINCT transaksi_detail.transaksi_id, transaksi.waktu_transaksi 
+    FROM transaksi_detail
+    INNER JOIN transaksi ON transaksi.id = transaksi_detail.transaksi_id LIMIT $halaman_awal, $batas");
 ?>
 
 <!DOCTYPE html>
@@ -67,13 +79,10 @@
                 </thead>
                 <tbody>
                     <?php 
-                        $query = mysqli_query($koneksi, "SELECT DISTINCT transaksi_detail.transaksi_id, transaksi.waktu_transaksi 
-                        FROM transaksi_detail
-                        INNER JOIN transaksi ON transaksi.id = transaksi_detail.transaksi_id");
                         $no = 1;
                         while($data = mysqli_fetch_array($query)) : ?>
                         <tr>
-                            <td><?= $no; ?></td>
+                            <td><?= $no++; ?></td>
                             <td><?= $data['transaksi_id']; ?></td>
                             <td><?= $data['waktu_transaksi'] ?></td>
                             <td>
@@ -84,8 +93,22 @@
                     <?php $no++; ?>
                     <?php endwhile; ?>
                 </tbody>
-
             </table>
         </div>
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item <?= ($halaman <= 1) ? "disabled" : ''; ?>">
+                    <a class="page-link" href='<?= (!isset($_GET["sort"])) ? "?" : "?sort=$_GET[sort]&"; ?>page=<?= $previous ?>'>Previous</a>
+                </li>
+                <?php for ($x = 1; $x <= $total_halaman; $x++) { ?>
+                    <li class="page-item <?= ($halaman == $x) ? "active" : ''; ?>">
+                        <a class="page-link" href='<?= (!isset($_GET["sort"])) ? "?" : "?sort=$_GET[sort]&"; ?>page=<?= $x ?>'><?= $x ?></a>
+                    </li>
+                <?php } ?>
+                <li class="page-item <?= ($halaman >= $total_halaman) ? "disabled" : ''; ?>">
+                    <a class="page-link" href='<?= (!isset($_GET["sort"])) ? '?' : "?sort=$_GET[sort]&"; ?>page=<?= $next ?>'>Next</a>
+                </li>
+            </ul>
+        </nav>
     </body>
 </html>
