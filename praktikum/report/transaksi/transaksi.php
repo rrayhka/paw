@@ -1,7 +1,7 @@
 <?php
     include("../koneksi.php");
 
-    // Delete functionality
+
     if (isset($_GET["id_hapus"])) {
         $id = $_GET["id_hapus"];
         $query = mysqli_query($koneksi, "DELETE FROM transaksi WHERE id = '$id'");
@@ -10,20 +10,20 @@
         }
     }
 
-    // Pagination setup
     $batas = isset($_GET['batas']) ? $_GET['batas'] : 5;
     $halaman = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $halaman_awal = ($halaman > 1) ? ($halaman * $batas) - $batas : 0;
     $previous = $halaman - 1;
     $next = $halaman + 1;
 
-    // Fetch total data for pagination
+    $sort = isset($_GET['sort']) ? $_GET['sort'] : '';
+    
+
     $data = mysqli_query($koneksi, "SELECT * FROM transaksi");
     $jumlah_data = mysqli_num_rows($data);
     $total_halaman = ceil($jumlah_data / $batas);
     $no = $halaman_awal + 1;
 
-    // Search by date functionality
     if (isset($_POST["tgl_awal"]) && isset($_POST["tgl_akhir"])) {
         $tgl_awal = $_POST["tgl_awal"];
         $tgl_akhir = $_POST["tgl_akhir"];
@@ -35,7 +35,26 @@
     } else if(isset($_GET["keyword"])){
         $keyword = $_GET["keyword"];
         $query = mysqli_query($koneksi, "SELECT * FROM transaksi WHERE pelanggan_id LIKE '%$keyword%' OR waktu_transaksi LIKE '%$keyword%' OR total LIKE '%$keyword%' OR id LIKE '%$keyword%'");
-    } else {
+    } else if(isset($sort)){
+        switch ($sort) {
+            case 'id_desc':
+                $query = mysqli_query($koneksi, "SELECT * FROM transaksi ORDER BY id DESC LIMIT $halaman_awal, $batas");
+                break;
+            case 'id_asc':
+                $query = mysqli_query($koneksi, "SELECT * FROM transaksi ORDER BY id LIMIT $halaman_awal, $batas");
+                break;
+            case 'date_desc':
+                $query = mysqli_query($koneksi, "SELECT * FROM transaksi ORDER BY waktu_transaksi DESC LIMIT $halaman_awal, $batas");
+                break;
+            case 'date_asc':
+                $query = mysqli_query($koneksi, "SELECT * FROM transaksi ORDER BY waktu_transaksi LIMIT $halaman_awal, $batas");
+                break;
+            default:
+                $query = mysqli_query($koneksi, "SELECT * FROM transaksi LIMIT $halaman_awal, $batas");
+                break;
+        }
+    } 
+    else {
         $query = mysqli_query($koneksi, "SELECT * FROM transaksi LIMIT $halaman_awal, $batas");
     }
 
@@ -143,8 +162,15 @@
                     <table class="table table-striped table-bordered text-center" id="myTable">
                         <thead class="table-primary">
                             <th>No</th>
-                            <th>ID Transaksi</th>
-                            <th>Tanggal</th>
+                            <th>ID Transaksi
+                                <a href="<?= (!isset($_GET["page"])) ? '?' : "?page=$_GET[page]&"; ?>sort=id_desc"><i class="fa fa-sort-desc"></i></a>
+                                <a href="<?= (!isset($_GET["page"])) ? '?' : "?page=$_GET[page]&"; ?>sort=id_asc"><i class="fa fa-sort-asc"></i></a>
+                            </th>
+                            <th>
+                                Tanggal
+                                <a href="<?= (!isset($_GET["page"])) ? '?' : "?page=$_GET[page]&"; ?>sort=date_desc"><i class="fa fa-sort-desc"></i></a>
+                                <a href="<?= (!isset($_GET["page"])) ? '?' : "?page=$_GET[page]&"; ?>sort=date_asc"><i class="fa fa-sort-asc"></i></a>
+                            </th>
                             <th>Action</th>
                         </thead>
                         <tbody>
