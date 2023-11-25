@@ -31,6 +31,7 @@
                 "SELECT sum(total) AS total_pendapatan FROM transaksi WHERE waktu_transaksi BETWEEN '$tanggalA' AND '$tanggalB'"
         );
         $arrPendapatan = $queryJumlahPendapatan ? mysqli_fetch_all($queryJumlahPendapatan, MYSQLI_ASSOC) : array();
+        
     }
 
     

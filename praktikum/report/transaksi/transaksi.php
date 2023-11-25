@@ -27,17 +27,16 @@
     if (isset($_POST["tgl_awal"]) && isset($_POST["tgl_akhir"])) {
         $tgl_awal = $_POST["tgl_awal"];
         $tgl_akhir = $_POST["tgl_akhir"];
-        
-        $query = mysqli_query($koneksi, "SELECT DISTINCT transaksi_detail.transaksi_id, transaksi.waktu_transaksi 
-            FROM transaksi_detail
-            INNER JOIN transaksi ON transaksi.id = transaksi_detail.transaksi_id 
-            WHERE transaksi.waktu_transaksi BETWEEN '$tgl_awal' AND '$tgl_akhir' 
-            LIMIT $halaman_awal, $batas");
+        if(empty($tgl_awal) && empty($tgl_akhir)){
+            $query = mysqli_query($koneksi, "SELECT * FROM transaksi");
+        } else {
+            $query = mysqli_query($koneksi, "SELECT * FROM transaksi WHERE waktu_transaksi BETWEEN '$tgl_awal' AND '$tgl_akhir'");
+        }
+    } else if(isset($_GET["keyword"])){
+        $keyword = $_GET["keyword"];
+        $query = mysqli_query($koneksi, "SELECT * FROM transaksi WHERE pelanggan_id LIKE '%$keyword%' OR waktu_transaksi LIKE '%$keyword%' OR total LIKE '%$keyword%' OR id LIKE '%$keyword%'");
     } else {
-        // Default query
-        $query = mysqli_query($koneksi, "SELECT DISTINCT transaksi_detail.transaksi_id, transaksi.waktu_transaksi 
-            FROM transaksi_detail
-            INNER JOIN transaksi ON transaksi.id = transaksi_detail.transaksi_id LIMIT $halaman_awal, $batas");
+        $query = mysqli_query($koneksi, "SELECT * FROM transaksi LIMIT $halaman_awal, $batas");
     }
 
 ?>
@@ -141,7 +140,7 @@
             </div>
             <div class="row mt-3">
                 <div class="table-responsive">
-                    <table class="table table-striped table-bordered text-center">
+                    <table class="table table-striped table-bordered text-center" id="myTable">
                         <thead class="table-primary">
                             <th>No</th>
                             <th>ID Transaksi</th>
@@ -150,23 +149,15 @@
                         </thead>
                         <tbody>
                             <?php
-                                if(isset($_POST["cari"])){
-                                    $cari = $_POST["keyword"];
-                                    $query = mysqli_query($koneksi, "SELECT * FROM transaksi WHERE id LIKE '%$cari%' OR pelanggan_id LIKE '%$cari%' OR total LIKE '%$cari%'");
-                                } else {
-                                    $query = mysqli_query($koneksi, "SELECT DISTINCT transaksi_detail.transaksi_id, transaksi.waktu_transaksi 
-                                    FROM transaksi_detail
-                                    INNER JOIN transaksi ON transaksi.id = transaksi_detail.transaksi_id LIMIT $halaman_awal, $batas");
-                                }
                                 $no = 1;
                                 while($data = mysqli_fetch_array($query)) : ?>
                                 <tr>
                                     <td><?= $no++; ?></td>
-                                    <td><?= $data['transaksi_id']; ?></td>
+                                    <td><?= $data['id']; ?></td>
                                     <td><?= $data['waktu_transaksi'] ?></td>
                                     <td>
-                                        <a href="addTransaksiDetail.php?id=<?= $data['transaksi_id'] ?>" class="btn btn-primary">Detail</a>
-                                        <a href="transaksi.php?id_hapus=<?= $data['transaksi_id'] ?>" class="btn btn-danger" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">Hapus</a>
+                                        <a href="addTransaksiDetail.php?id=<?= $data['id'] ?>" class="btn btn-primary">Detail</a>
+                                        <a href="transaksi.php?id_hapus=<?= $data['id'] ?>" class="btn btn-danger" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">Hapus</a>
                                     </td>
                                 </tr>
                             <?php $no++; ?>
@@ -191,5 +182,6 @@
                 </li>
             </ul>
         </nav>
+        <script>new DataTable('#myTable');</script>
     </body>
 </html>
