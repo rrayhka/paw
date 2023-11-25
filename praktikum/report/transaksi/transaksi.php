@@ -1,24 +1,45 @@
 <?php
     include("../koneksi.php");
-    if(isset($_GET["id_hapus"])){
+
+    // Delete functionality
+    if (isset($_GET["id_hapus"])) {
         $id = $_GET["id_hapus"];
         $query = mysqli_query($koneksi, "DELETE FROM transaksi WHERE id = '$id'");
-        if($query){
+        if ($query) {
             header("Location: transaksi.php");
         }
     }
-    $batas = 5;
+
+    // Pagination setup
+    $batas = isset($_GET['batas']) ? $_GET['batas'] : 5;
     $halaman = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $halaman_awal = ($halaman > 1) ? ($halaman * $batas) - $batas : 0;
     $previous = $halaman - 1;
     $next = $halaman + 1;
+
+    // Fetch total data for pagination
     $data = mysqli_query($koneksi, "SELECT * FROM transaksi");
     $jumlah_data = mysqli_num_rows($data);
     $total_halaman = ceil($jumlah_data / $batas);
     $no = $halaman_awal + 1;
-    $query = mysqli_query($koneksi, "SELECT DISTINCT transaksi_detail.transaksi_id, transaksi.waktu_transaksi 
-    FROM transaksi_detail
-    INNER JOIN transaksi ON transaksi.id = transaksi_detail.transaksi_id LIMIT $halaman_awal, $batas");
+
+    // Search by date functionality
+    if (isset($_POST["tgl_awal"]) && isset($_POST["tgl_akhir"])) {
+        $tgl_awal = $_POST["tgl_awal"];
+        $tgl_akhir = $_POST["tgl_akhir"];
+        
+        $query = mysqli_query($koneksi, "SELECT DISTINCT transaksi_detail.transaksi_id, transaksi.waktu_transaksi 
+            FROM transaksi_detail
+            INNER JOIN transaksi ON transaksi.id = transaksi_detail.transaksi_id 
+            WHERE transaksi.waktu_transaksi BETWEEN '$tgl_awal' AND '$tgl_akhir' 
+            LIMIT $halaman_awal, $batas");
+    } else {
+        // Default query
+        $query = mysqli_query($koneksi, "SELECT DISTINCT transaksi_detail.transaksi_id, transaksi.waktu_transaksi 
+            FROM transaksi_detail
+            INNER JOIN transaksi ON transaksi.id = transaksi_detail.transaksi_id LIMIT $halaman_awal, $batas");
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -27,6 +48,7 @@
         <title>Praktikum Meet 6</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -70,30 +92,89 @@
         <div class="container mt-3">
             <h1>Daftar Transaksi</h1>
             <a href="addTransaksi.php" class="btn btn-primary mb-3">Tambah Transaksi</a>
-            <table class="table table-striped table-bordered text-center">
-                <thead class="table-primary">
-                    <th>No</th>
-                    <th>ID Transaksi</th>
-                    <th>Tanggal</th>
-                    <th>Action</th>
-                </thead>
-                <tbody>
-                    <?php 
-                        $no = 1;
-                        while($data = mysqli_fetch_array($query)) : ?>
-                        <tr>
-                            <td><?= $no++; ?></td>
-                            <td><?= $data['transaksi_id']; ?></td>
-                            <td><?= $data['waktu_transaksi'] ?></td>
-                            <td>
-                                <a href="addTransaksiDetail.php?id=<?= $data['transaksi_id'] ?>" class="btn btn-primary">Detail</a>
-                                <a href="transaksi.php?id_hapus=<?= $data['transaksi_id'] ?>" class="btn btn-danger" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">Hapus</a>
-                            </td>
-                        </tr>
-                    <?php $no++; ?>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
+            <form action="" method="post">
+                <div class="row">
+                    <div class="col">
+                        <label for="tgl_awal" class="form-label">Tanggal Awal</label>
+                        <input type="date" class="form-control" id="tgl_awal" name="tgl_awal">
+                    </div>
+                    <div class="col">
+                        <label for="tgl_akhir" class="form-label">Tanggal Akhir</label>
+                        <input type="date" class="form-control" id="tgl_akhir" name="tgl_akhir">
+                    </div>
+                    <div class="col mt-4">
+                        <button type="submit" class="btn btn-primary">Filter Tanggal</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="row mt-3">
+                <!-- <div class="col">
+                </div> -->
+                <div class="col">
+                    <!-- combo box page -->
+                    <form action="" method="get">
+                        <div class="input-group">
+                            <select name="batas" class="form-control" onchange="this.form.submit()">
+                                <option value="5" <?php if(isset($_GET['batas']) && $_GET['batas'] == '5') echo 'selected'; ?>>5</option>
+                                <option value="10" <?php if(isset($_GET['batas']) && $_GET['batas'] == '10') echo 'selected'; ?>>10</option>
+                                <option value="20" <?php if(isset($_GET['batas']) && $_GET['batas'] == '20') echo 'selected'; ?>>20</option>
+                                <option value="50" <?php if(isset($_GET['batas']) && $_GET['batas'] == '50') echo 'selected'; ?>>50</option>
+                            </select>
+                        </div>
+                    </form>
+                    <!-- end combo box page -->
+                </div>
+                <div class="col">
+                    <!-- search -->
+                    <form action="" method="get">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Cari..." name="keyword">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit">Cari</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- end search -->
+                </div>
+
+            </div>
+            <div class="row mt-3">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered text-center">
+                        <thead class="table-primary">
+                            <th>No</th>
+                            <th>ID Transaksi</th>
+                            <th>Tanggal</th>
+                            <th>Action</th>
+                        </thead>
+                        <tbody>
+                            <?php
+                                if(isset($_POST["cari"])){
+                                    $cari = $_POST["keyword"];
+                                    $query = mysqli_query($koneksi, "SELECT * FROM transaksi WHERE id LIKE '%$cari%' OR pelanggan_id LIKE '%$cari%' OR total LIKE '%$cari%'");
+                                } else {
+                                    $query = mysqli_query($koneksi, "SELECT DISTINCT transaksi_detail.transaksi_id, transaksi.waktu_transaksi 
+                                    FROM transaksi_detail
+                                    INNER JOIN transaksi ON transaksi.id = transaksi_detail.transaksi_id LIMIT $halaman_awal, $batas");
+                                }
+                                $no = 1;
+                                while($data = mysqli_fetch_array($query)) : ?>
+                                <tr>
+                                    <td><?= $no++; ?></td>
+                                    <td><?= $data['transaksi_id']; ?></td>
+                                    <td><?= $data['waktu_transaksi'] ?></td>
+                                    <td>
+                                        <a href="addTransaksiDetail.php?id=<?= $data['transaksi_id'] ?>" class="btn btn-primary">Detail</a>
+                                        <a href="transaksi.php?id_hapus=<?= $data['transaksi_id'] ?>" class="btn btn-danger" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">Hapus</a>
+                                    </td>
+                                </tr>
+                            <?php $no++; ?>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
         <nav>
             <ul class="pagination justify-content-center">
