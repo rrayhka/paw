@@ -1,17 +1,12 @@
 <?php
     require_once 'koneksi.php';
-    // if(!isset($_SESSION['login'])) {
-    //     header('Location: index.php');
-    //     exit();
-    // } else{
-    //     $username = $_SESSION['username'];
-    //     $role = $_SESSION['role'];
-    //     if ($role === 'admin') {
-    //         header('Location: menu/admin.php');
-    //     } else {
-    //         header('Location: menu/kasir.php');
-    //     }
-    // }
+    if(isset($_SESSION["login"])){
+        if($_SESSION["role"] == "admin"){
+            header('Location: menu/menu.php');
+        } elseif($_SESSION["role"] == "kasir"){
+            header('Location: menu/menu.php');
+        } 
+    }
     $user = [
         "admin" => [
             "ahmad" => "ahmad123",
@@ -22,35 +17,31 @@
             "joko" => "joko123",
             "siti" => "siti123",
             "wati" => "wati123",
-        ]
-    ];
+            ]
+        ];
     $login_error = '';
-    $_SESSION["role"] = "Guest";
     if (isset($_POST['login'])) {
         $username = $_POST['username'];
         $password = $_POST['password']; 
-        $status = '';
-        $loggedIn = false; 
+        $status = ''; 
 
         foreach ($user as $role => $users) {
             if (isset($users[$username]) && $users[$username] === $password) {
                 $_SESSION['username'] = $username;
                 $_SESSION['role'] = $role;
                 $_SESSION['login'] = true;
-                // $status = $_SESSION['role'];
                 
                 if ($role === 'admin') {
                     header('Location: menu/menu.php');
                 } else {
                     header('Location: menu/menu.php');
                 }
-                exit(); 
+                
             } else{
                 $login_error = 'Username or Password is wrong';
             }
         }
     }
-    // var_dump($_SESSION['login']);
 ?>
 
 

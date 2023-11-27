@@ -7,6 +7,7 @@
     $nomorMeja = 5;
     $makanan = "";
     $harga = 0;
+    $_SESSION["role"] = isset($_SESSION["role"]) ? $_SESSION["role"] : "Guest"; 
     
     if(isset($_POST["jenis_makanan"])) {
         $jenis_makanan = $_POST["jenis_makanan"];
