@@ -1,62 +1,67 @@
 <?php
-include "../koneksi.php";
-
-$batas = 5;
-$halaman = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$halaman_awal = ($halaman > 1) ? ($halaman * $batas) - $batas : 0;
-$previous = $halaman - 1;
-$next = $halaman + 1;
-
-$data1 = mysqli_query($conn, "SELECT * FROM orders");
-$jumlah_data = mysqli_num_rows($data1);
-$total_halaman = ceil($jumlah_data / $batas);
-$count = $halaman_awal + 1;
-
-$data = mysqli_query($conn, "SELECT * FROM orders LIMIT $halaman_awal, $batas");
-
-$sort_tgl_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY tanggal_order DESC LIMIT $halaman_awal, $batas");
-$sort_tgl_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY tanggal_order LIMIT $halaman_awal, $batas");
-$sort_meja_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY nomor_meja DESC LIMIT $halaman_awal, $batas");
-$sort_meja_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY nomor_meja LIMIT $halaman_awal, $batas");
-$sort_total_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY total_bayar DESC LIMIT $halaman_awal, $batas");
-$sort_total_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY total_bayar LIMIT $halaman_awal, $batas");
-
-if (isset($_GET['sort'])) {
-    $data_sort = $_GET;
-    if ($data_sort['sort'] == 'ascT') {
-        $sort = $sort_tgl_asc;
-    } elseif ($data_sort['sort'] == 'descT') {
-        $sort = $sort_tgl_desc;
-    } elseif ($data_sort['sort'] == 'ascM') {
-        $sort = $sort_meja_asc;
-    } elseif ($data_sort['sort'] == 'descM') {
-        $sort = $sort_meja_desc;
-    } elseif ($data_sort['sort'] == 'ascTo') {
-        $sort = $sort_total_asc;
-    } elseif ($data_sort['sort'] == 'descTo') {
-        $sort = $sort_total_desc;
-    }
-} else {
-    $sort = $data;
-}
-
-if (isset($_GET['order_id'])) {
-    $id = $_GET['order_id'];
-    $deleteSql = "DELETE FROM orders WHERE order_id = $id";
-    $deleteResult = mysqli_query($conn, $deleteSql);
-    if ($deleteResult) {
-        header("Location: order.php");
-        exit;
+    include "../koneksi.php";
+    if(isset($_SESSION['role'])) {
+        $_SESSION['role'];
     } else {
-        echo "Gagal menghapus Order";
+        $_SESSION['role'] = '';
     }
-}
 
-if(isset($_POST["search"])){
-    $search = $_POST["search"];
-    $data = mysqli_query($conn, "SELECT * FROM orders WHERE order_id LIKE '%$search%' OR nomor_meja LIKE '%$search%' OR total_bayar LIKE '%$search%' OR nama_pelayan LIKE '%$search%'");
-    $sort = $data;
-}
+    $batas = 5;
+    $halaman = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $halaman_awal = ($halaman > 1) ? ($halaman * $batas) - $batas : 0;
+    $previous = $halaman - 1;
+    $next = $halaman + 1;
+
+    $data1 = mysqli_query($conn, "SELECT * FROM orders");
+    $jumlah_data = mysqli_num_rows($data1);
+    $total_halaman = ceil($jumlah_data / $batas);
+    $count = $halaman_awal + 1;
+
+    $data = mysqli_query($conn, "SELECT * FROM orders LIMIT $halaman_awal, $batas");
+
+    $sort_tgl_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY tanggal_order DESC LIMIT $halaman_awal, $batas");
+    $sort_tgl_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY tanggal_order LIMIT $halaman_awal, $batas");
+    $sort_meja_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY nomor_meja DESC LIMIT $halaman_awal, $batas");
+    $sort_meja_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY nomor_meja LIMIT $halaman_awal, $batas");
+    $sort_total_desc = mysqli_query($conn, "SELECT * FROM orders ORDER BY total_bayar DESC LIMIT $halaman_awal, $batas");
+    $sort_total_asc = mysqli_query($conn, "SELECT * FROM orders ORDER BY total_bayar LIMIT $halaman_awal, $batas");
+
+    if (isset($_GET['sort'])) {
+        $data_sort = $_GET;
+        if ($data_sort['sort'] == 'ascT') {
+            $sort = $sort_tgl_asc;
+        } elseif ($data_sort['sort'] == 'descT') {
+            $sort = $sort_tgl_desc;
+        } elseif ($data_sort['sort'] == 'ascM') {
+            $sort = $sort_meja_asc;
+        } elseif ($data_sort['sort'] == 'descM') {
+            $sort = $sort_meja_desc;
+        } elseif ($data_sort['sort'] == 'ascTo') {
+            $sort = $sort_total_asc;
+        } elseif ($data_sort['sort'] == 'descTo') {
+            $sort = $sort_total_desc;
+        }
+    } else {
+        $sort = $data;
+    }
+
+    if (isset($_GET['order_id'])) {
+        $id = $_GET['order_id'];
+        $deleteSql = "DELETE FROM orders WHERE order_id = $id";
+        $deleteResult = mysqli_query($conn, $deleteSql);
+        if ($deleteResult) {
+            header("Location: order.php");
+            exit;
+        } else {
+            echo "Gagal menghapus Order";
+        }
+    }
+
+    if (isset($_POST["search"])) {
+        $search = $_POST["search"];
+        $data = mysqli_query($conn, "SELECT * FROM orders WHERE order_id LIKE '%$search%' OR nomor_meja LIKE '%$search%' OR total_bayar LIKE '%$search%' OR nama_pelayan LIKE '%$search%'");
+        $sort = $data;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -80,17 +85,18 @@ if(isset($_POST["search"])){
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                <?php if($_SESSION["role"] != 'Guest'): ?>
+                    <div class="btn-group ">
+                        <button type="button" class="btn <?php echo $_SESSION['role'] === 'admin' ? 'btn-primary' : 'btn-secondary'; ?> btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <?php echo ucfirst($_SESSION['role']); ?>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#"><?= ucfirst($_SESSION['username']); ?></a>
+                            <a class="dropdown-item" href="../logout.php">Logout</a>
+                        </div>
+                    </div>
+                <?php endif; ?>
                 <ul class="navbar-nav ml-auto">
-                    <!-- <li>
-                        <form  method="post">
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" placeholder="Search" name="search">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="submit">Search</button>
-                                </div>
-                            </div>
-                        </form>
-                    </li> -->
                     <li class="nav-item active">
                         <a class="nav-link" href="../orders/order.php">Order</a>
                     </li>
@@ -185,7 +191,9 @@ if(isset($_POST["search"])){
                             <td>Rp <?= number_format($row['total_bayar']) ?></td>
                             <td>
                                 <a href="ordersDetail.php?order_id=<?= $row['order_id'] ?>" class="btn btn-primary">Detail</a>
+                                <?php if($_SESSION["role"] == 'admin') : ?>
                                 <a href="order.php?order_id=<?= $row['order_id'] ?>" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus order dengan ID <?= $row['order_id'] ?>?')">Hapus</a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php

@@ -1,34 +1,58 @@
 <?php
     require_once 'koneksi.php';
+    // if(!isset($_SESSION['login'])) {
+    //     header('Location: index.php');
+    //     exit();
+    // } else{
+    //     $username = $_SESSION['username'];
+    //     $role = $_SESSION['role'];
+    //     if ($role === 'admin') {
+    //         header('Location: menu/admin.php');
+    //     } else {
+    //         header('Location: menu/kasir.php');
+    //     }
+    // }
     $user = [
         "admin" => [
             "ahmad" => "ahmad123",
             "budi" => "budi123",
             "cindy" => "cindy123",
-        ], 
+        ],
         "kasir" => [
             "joko" => "joko123",
             "siti" => "siti123",
             "wati" => "wati123",
         ]
     ];
-    
+    $login_error = '';
+    $_SESSION["role"] = "Guest";
     if (isset($_POST['login'])) {
         $username = $_POST['username'];
-        $password = $_POST['password'];
-        $role = $_POST['role'];
-        foreach ($user as $key => $value) {
-            foreach ($value as $key2 => $value2) {
-                if ($username == $key2 && $password == $value2) {
-                    $_SESSION['username'] = $username;
-                    $_SESSION['role'] = $key;
-                    $_SESSION['login'] = true;
-                    header("Location: home.php");
+        $password = $_POST['password']; 
+        $status = '';
+        $loggedIn = false; 
+
+        foreach ($user as $role => $users) {
+            if (isset($users[$username]) && $users[$username] === $password) {
+                $_SESSION['username'] = $username;
+                $_SESSION['role'] = $role;
+                $_SESSION['login'] = true;
+                // $status = $_SESSION['role'];
+                
+                if ($role === 'admin') {
+                    header('Location: menu/menu.php');
+                } else {
+                    header('Location: menu/menu.php');
                 }
+                exit(); 
+            } else{
+                $login_error = 'Username or Password is wrong';
             }
         }
     }
+    // var_dump($_SESSION['login']);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -48,17 +72,20 @@
                         <form method="post" action="index.php">
                             <div class="form-group">
                                 <label for="username">Username</label>
-                                <input type="text" class="form-control" name="username" id="username" required placeholder="username = admin">
+                                <input type="text" class="form-control" name="username" id="username" required placeholder="Masukkan username">
                             </div>
                             <div class="form-group">
                                 <label for="password">Password</label>
-                                <input type="password" class="form-control" name="password" id="password" required placeholder="password = admin">
+                                <input type="password" class="form-control" name="password" id="password" required placeholder="Masukkan Password">
                             </div>
                             <button type="submit" name="login" class="btn btn-primary">Login</button>
                         </form>
                         <?php if (!empty($login_error)): ?>
                             <div class="alert alert-danger mt-3"><?= $login_error ?></div>
                         <?php endif; ?>
+                        <p class="mt-3">
+                            Login as guest: <a href="orders/addOrder.php">Click here</a>
+                        </p>
                         <p class="mt-3">
                             This source code is available on my GitHub account. 
                             <a href="https://github.com/rrayhka/paw" target="_blank">Click here to see it</a>
