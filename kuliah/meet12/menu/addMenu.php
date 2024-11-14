@@ -64,7 +64,7 @@
         </div>
     </nav>
     <div class="container mt-4">
-        <h1 class="mb-4">Tambah Menu Baru</h1>
+        <h1 class="mb-4">Tambah Menu </h1>
         <form method="post">
             <div class="form-group">
                 <label for="kategori">Kategori</label>
